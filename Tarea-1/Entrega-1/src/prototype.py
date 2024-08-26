@@ -4,8 +4,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def def_graph():
-    house_prices = np.random.normal(200000, 25000, 5000)
-    plt.hist(house_prices, 200)
+    x = [29, 8, 6, 6, 5, 5, 4, 3, 3, 2]
+    x_labels = ["Anchovies", "Jalapeños", "Pineapple", "Eggplant", "Broccoli",
+                "Mushrooms", "Fresh Garlic", "Artichokes", "Olives", "Salami"]
+    x_explode = [0.1, 0,0,0,0,0,0,0,0,0]
+    plt.title("Top 10: Least Favorite Pizza Toppings")
+    plt.xlabel("Taken from:\nSanders, L., & Ballard, J. (2023, 16 mayo). Americans \
+favorite pizza topping is pepperoni. Their least favorite, by far: anchovies. \
+YouGov.\n https://today.yougov.com/consumer/articles/45715-americans-favorite-pizza-topping-pepperoni-poll")
+    plt.pie(x=x, labels=x_labels, wedgeprops={'edgecolor': 'black'}, shadow=True, explode=x_explode, autopct="%1.1f%%")
     plt.show()
 
 # Creation of Main Window
