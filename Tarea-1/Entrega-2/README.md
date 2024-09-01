@@ -13,7 +13,29 @@ biblioteca de Python. Sin embargo, es necesario mantener la carpeta
 [ply](src/ply) en la carpeta `src` junto al ejecutable
 [AnalizadorLexico.py](src/AnalizadorLexico.py).
 
-Para correr el programa introduzca el siguiente comando en la terminal,
-estando dentro de la carpeta `Tarea-1/Entrega-2/src`:
+A su vez, también es necesario importar los siguientes paquetes y módulos al
+código:
+
+- Para el análisis léxico:
+
+        import ply.lex as lex
+
+- Para leer el archivo XML de entrada:
+
+        from pathlib import Path
+
+- Para trabajar con expresiones regulares:
+
+    En nuestro caso usamos
+    la función `re.sub(pattern, repl, string)` para reemplazar cambios de línea
+    dentro del patrón con espacios en blanco en la cadena para evitar dividir una
+    oración.
+
+        import re
+
+Para correr el programa introduzca el siguiente comando en la terminal (dependiendo de la versión de Python instalada),
+estando dentro de la carpeta [Tarea-1/Entrega-2/src:](Tarea-1/Entrega-2/src)
+
+    python AnalizadorLexico.py
 
     python3 AnalizadorLexico.py
