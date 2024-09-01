@@ -68,6 +68,7 @@ tokens = (
 )
 
 # ------------------------------------------------------------------------------
+
 # Regular expression rules for tokens
 
 def t_OPEN_HEALTH_TOPIC(t):
