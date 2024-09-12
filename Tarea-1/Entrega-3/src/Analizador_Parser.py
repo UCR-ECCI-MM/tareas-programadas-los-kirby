@@ -2,6 +2,20 @@ import ply.lex as lex
 from pathlib import Path
 import re
 
+# ------------------------------------------------------------------------------
+# Analizador_Parser.py
+#
+# Daniel Gómez Solís
+# María Fernanda Herrera Gutiérrez
+# Grupo: los kirbys
+
+# Tokenizer for XML medical data
+# Syntactical analyzer for XML medical data
+# ------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+# LEXER CODE
+
 # List of tokens
 tokens = (
     'OPEN_HEALTH_TOPICS',               # Open tag <health-topics>
@@ -306,6 +320,40 @@ def t_error(t):
 # Build the lexer
 lexer = lex.lex()
 
+# ------------------------------------------------------------------------------
+# PARSER CODE
+
+# import the yacc module for syntax parsing
+import ply.yacc as yacc
+
+# Parsing rules
+
+# Example of precedence
+precedence = (
+    ('left', 'TEXT'),
+    ('left', 'XML_H', 'XML_LI', 'XML_UL', 'XML_P', 'XML_A', 'XML_STRONG', 'XML_TAG')
+)
+
+# Structures for future use
+structure = {} # Not yet needed
+
+# Define different rules for the parser
+
+# Example of a rule
+def p_health_topics(p):
+    '''health_topics : OPEN_HEALTH_TOPICS TOPICS_TOTAL DATA_GENERATION DATE_GENERATED TIME_GENERATED health_topic CLOSE_HEALTH_TOPICS'''
+    p[0] = p[6]
+    print("Health topics parsed")
+
+# ... more rules
+
+# Define rule for error handling
+def p_error(t):
+    print("Syntax error at '%s'" % t.value)
+
+# Build the parser
+parser = yacc.yacc()
+
 # Define a rule to read data from file
 def read_data():
     file_name = Path(__file__).parent / "medical_data.xml"
@@ -316,16 +364,22 @@ def read_data():
 # Read data from file
 data = read_data()
 
-# Tokenize
-def run_lexer(data):
-    lexer.input(data)
-    path = Path("tokens.txt")
-    with path.open("w") as file:
-        while True:
-            tok = lexer.token()
-            if not tok:
-                break
-            file.write(f"{tok.type} {tok.value}\n")
+# Parse data
+parser.parse(data)
 
-data = read_data()
-run_lexer(data)
+# Print parser results
+
+# ------------------------------------------------------------------------------
+# Tokenize
+# def run_lexer(data):
+#     lexer.input(data)
+#     path = Path("tokens.txt")
+#     with path.open("w") as file:
+#         while True:
+#             tok = lexer.token()
+#             if not tok:
+#                 break
+#             file.write(f"{tok.type} {tok.value}\n")
+
+# data = read_data()
+# run_lexer(data)
