@@ -6,7 +6,9 @@ import re
 tokens = (
     'OPEN_HEALTH_TOPICS',               # Open tag <health-topics>
     'TOPICS_TOTAL',                     # Total number of topics
+    'DATA_GENERATION',                  # Data of date and time of generation
     'DATE_GENERATED',                   # Date of generation
+    'TIME_GENERATED',                   # Time of generation
     'CLOSE_HEALTH_TOPICS',              # Close tag </health-topicS>
 
     'OPEN_HEALTH_TOPIC',                # Open tag <health-topic>
@@ -81,9 +83,18 @@ def t_TOPICS_TOTAL(t):
     t.value = int(t.value.split('=')[1].strip('"'))
     return t
 
+def t_DATA_GENERATION(t):
+    r'date-generated="'
+    return t
+
 def t_DATE_GENERATED(t):
-    r'date-generated="/(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0,1,2])\/(19|20)\d{2} \d{2}:\d{2}:\d{2}"'
-    t.value = t.value.split('=')[1].strip('"')
+    r'(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/(19|20)\d{2}'
+    return t
+
+def t_TIME_GENERATED(t):
+    r'\d{2}:\d{2}:\d{2}"'
+    # remove quotes
+    t.value = t.value.strip('"')
     return t
 
 def t_CLOSE_HEALTH_TOPICS(t):
