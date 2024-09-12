@@ -1,6 +1,7 @@
 import ply.lex as lex
 from pathlib import Path
 import re
+# import the yacc module for syntax parsing
 import ply.yacc as yacc
 
 # ------------------------------------------------------------------------------
@@ -324,16 +325,8 @@ lexer = lex.lex()
 # ------------------------------------------------------------------------------
 # PARSER CODE
 
-# import the yacc module for syntax parsing
-import ply.yacc as yacc
-
 # Parsing rules
 
-# Example of precedence
-precedence = (
-    ('left', 'TEXT'),
-    ('left', 'XML_H', 'XML_LI', 'XML_UL', 'XML_P', 'XML_A', 'XML_STRONG', 'XML_TAG')
-)
 
 # Structures for future use
 structure = {} # Not yet needed
@@ -343,7 +336,7 @@ structure = {} # Not yet needed
 # Example of a rule
 def p_health_topics(p):
     '''health_topics : OPEN_HEALTH_TOPICS TOPICS_TOTAL DATA_GENERATION DATE_GENERATED TIME_GENERATED health_topic_contents CLOSE_HEALTH_TOPICS
-                    |'''
+        |'''
     # p[0] = p[6]
     if (len(p) > 1):
         health_topics_string = str(p[2])+ " " + p[4] + " " + p[5]
@@ -352,32 +345,30 @@ def p_health_topics(p):
     print("Health topics parsed")
 
 def p_health_topic_contents(p):
-    '''health_topic_contents : OPEN_HEALTH_TOPIC HT_DESCRIPTION TITLE URL ID LANGUAGE DATE elements CLOSE_HEALTH_TOPIC
-                            |'''
+    '''health_topic_contents : OPEN_HEALTH_TOPIC HT_DESCRIPTION TITLE URL ID LANGUAGE DATE elements CLOSE_HEALTH_TOPIC health_topic_contents
+        |'''
     if (len(p) > 1):
         health_topic_string =  p[2] + " " + p[3] + " " + str(p[4]) + " " + p[5] + " " + p[6] + " " + p[7]
         print(health_topic_string)
+    print ("Health topic contents parsed")
 
 def p_elements(p):
-    '''elements : also_called_content full_summary_content
-                |'''
-    # '''elements : also_called_content full_summary_content group_content language_mapped_topic_content descriptor_content 
-    # other_language_content primary_institute_content related_topic_content see_reference_content site_content'''
+    '''elements : also_called_content full_summary_content group_content language_mapped_topic_content descriptor_content other_language_content primary_institute_content related_topic_content see_reference_content site_content'''
+    print("Elements parsed")
 
 def p_also_called_content(p):
     '''also_called_content : OPEN_ALSO_CALLED TEXT CLOSE_ALSO_CALLED also_called_content
-                            |'''
+        |'''
     if (len(p) > 1):
         print(p[2])
+    print("Also called content parsed")
 
 def p_full_summary_content(p):
     '''full_summary_content : OPEN_FULL_SUMMARY TEXT CLOSE_FULL_SUMMARY full_summary_content
-                            |'''
+        |'''
     if (len(p) > 1):
         print(p[2])
-
-
-# ... more rules
+    print("Full summary content parsed")
 
 # Define rule for error handling
 def p_error(t):
