@@ -327,6 +327,7 @@ lexer = lex.lex()
 
 # Parsing rules
 
+
 # Structures for future use
 structure = {} # Not yet needed
 
@@ -368,6 +369,91 @@ def p_full_summary_content(p):
     if (len(p) > 1):
         print(p[2])
     print("Full summary content parsed")
+
+def p_group_content(p):
+    '''group_content : OPEN_GROUP URL ID TEXT CLOSE_GROUP group_content
+        |'''
+    if (len(p) > 1):
+        group_string = p[2] + " " + p[3] + " " + p[4]
+        print(group_string)
+    print("Group content parsed")
+
+def p_language_mapped_topic_content(p):
+    '''language_mapped_topic_content : OPEN_LANGUAGE_MAPPED_TOPIC URL ID LANGUAGE TEXT CLOSE_LANGUAGE_MAPPED_TOPIC language_mapped_topic_content
+        |'''
+    if (len(p) > 1):
+        language_mapped_topic_string = p[2] + " " + p[3] + " " + p[4] + " " + p[5]
+        print(language_mapped_topic_string)
+    print("Language mapped topic content parsed")
+
+def p_descriptor_content(p):
+    '''descriptor_content : OPEN_DESCRIPTOR ID TEXT CLOSE_DESCRIPTOR descriptor_content
+        |'''
+    if (len(p) > 1):
+        descriptor_string = p[2] + " " + p[3]
+        print(descriptor_string)
+    print("Descriptor content parsed")
+
+def p_other_language_content(p):
+    '''other_language_content : OPEN_OTHER_LANGUAGE VERNACULAR_NAME URL TEXT CLOSE_OTHER_LANGUAGE other_language_content
+        |'''
+    if (len(p) > 1):
+        other_language_string = p[2] + " " + p[3] + " " + p[4]
+        print(other_language_string)
+    print("Other language content parsed")
+
+def p_primary_institute_content(p):
+    '''primary_institute_content : OPEN_PRIMARY_INSTITUTE URL TEXT CLOSE_PRIMARY_INSTITUTE primary_institute_content
+        |'''
+    if (len(p) > 1):
+        primary_institute_string = p[2] + " " + p[3]
+        print(primary_institute_string)
+    print("Primary institute content parsed")
+
+def p_related_topic_content(p):
+    '''related_topic_content : OPEN_RELATED_TOPIC URL ID TEXT CLOSE_RELATED_TOPIC related_topic_content
+        |'''
+    if (len(p) > 1):
+        related_topic_string = p[2] + " " + p[3] + " " + p[4]
+        print(related_topic_string)
+    print("Related topic content parsed")
+
+def p_see_reference_content(p):
+    '''see_reference_content : OPEN_SEE_REFERENCE TEXT CLOSE_SEE_REFERENCE see_reference_content
+        |'''
+    if (len(p) > 1):
+        print(p[2])
+    print("See reference content parsed")
+
+def p_site_content(p):
+    '''site_content : OPEN_SITE TITLE URL LANGUAGE_SITE_URL information_content organization_content standard_content CLOSE_SITE site_content
+                    | OPEN_SITE TITLE URL information_content organization_content standard_content CLOSE_SITE site_content
+                    |'''
+    if (len(p) > 1):
+        if (len(p) > 9):
+            site_content_string = p[2] + " " + p[3] + " " + p[4]
+            print(site_content_string)
+        else:
+            site_content_string = p[2] + " " + p[3]
+            print(site_content_string)
+
+def p_information_content(p):
+    '''information_content : OPEN_INFORMATION_CATEGORY TEXT CLOSE_INFORMATION_CATEGORY information_content
+                        |'''
+    if (len(p) > 1):
+        print(p[2])        
+
+def p_organization_content(p):
+    '''organization_content : OPEN_ORGANIZATION TEXT CLOSE_ORGANIZATION organization_content
+                        |'''
+    if (len(p) > 1):
+        print(p[2])
+
+def p_standard_content(p):
+    '''standard_content : OPEN_STANDARD_DESCRIPTION TEXT CLOSE_STANDARD_DESCRIPTION standard_content
+                    |'''
+    if (len(p) > 1):
+        print(p[2])
 
 # Define rule for error handling
 def p_error(t):
