@@ -327,7 +327,6 @@ lexer = lex.lex()
 
 # Parsing rules
 
-
 # Structures for future use
 structure = {} # Not yet needed
 
