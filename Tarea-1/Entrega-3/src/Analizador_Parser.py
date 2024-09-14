@@ -78,15 +78,15 @@ tokens = (
     'OPEN_STANDARD_DESCRIPTION',        # Open tag <standard-description>
     'CLOSE_STANDARD_DESCRIPTION',       # Close tag </standard-description>
 
-    'XML_H',                            # XML heading tags
-    'XML_LI',                           # List item tags
-    'XML_UL',                           # Unordered list tags
-    'XML_P',                            # Paragraph tags
-    'XML_A',                            # Anchor tags
-    'XML_STRONG',                       # Strong tags
-    'XML_TAG',                          # XML tags
-
+    #'XML_H',                            # XML heading tags
+    #'XML_LI',                           # List item tags
+    #'XML_UL',                           # Unordered list tags
+    #'XML_P',                            # Paragraph tags
+    #'XML_A',                            # Anchor tags
+    #'XML_STRONG',                       # Strong tags
+    #'XML_TAG',                          # XML tags
     'TEXT'                              # Text content
+
 )
 
 # Regular expression rules for tokens
@@ -269,33 +269,37 @@ def t_CLOSE_STANDARD_DESCRIPTION(t):
     r'</standard-description>'
     return t
 
-def t_XML_H(t):
-    r'</?h[2-6]>'
-    return t
-
-def t_XML_LI(t):
-    r'</?li>'
-    return t
-
-def t_XML_UL(t):
-    r'</?ul>'
-    return t
-
-def t_XML_P(t):
-    r'</?p>'
-    return t
-
-def t_XML_A(t):
-    r'</?a\s+href="[^"]*">'
-    return t
-
-def t_XML_STRONG(t):
-    r'</?strong>'
-    return t
-
 def t_XML_TAG(t):
-    r'\<[^>]+\>'
-    return t
+    r'<\/?(br|a|pre|img|strong|b|i|ul|li|ol|p|h[1-6])(\s+[^>]+)?>'
+    pass
+
+# def t_XML_H(t):
+#     r'</?h[2-6]>'
+#     pass
+
+# def t_XML_LI(t):
+#     r'</?li>'
+#     pass
+
+# def t_XML_UL(t):
+#     r'</?ul>'
+#     pass
+
+# def t_XML_P(t):
+#     r'</?p>'
+#     pass
+
+# def t_XML_A(t):
+#     r'</?a\s+href="[^"]*">'
+#     pass
+
+# def t_XML_STRONG(t):
+#     r'</?strong>'
+#     pass
+
+# def t_XML_TAG(t):
+#     r'\<[^>]+\>'
+#     pass
 
 def t_TEXT(t):
     r'[^\<]+'
@@ -327,48 +331,39 @@ lexer = lex.lex()
 
 # Parsing rules
 
-
 # Structures for future use
 structure = {} # Not yet needed
 
 # Define different rules for the parser
 
-# Example of a rule
 def p_health_topics(p):
     '''health_topics : OPEN_HEALTH_TOPICS TOPICS_TOTAL DATA_GENERATION DATE_GENERATED TIME_GENERATED health_topic_contents CLOSE_HEALTH_TOPICS
         |'''
-    # p[0] = p[6]
     if (len(p) > 1):
         health_topics_string = str(p[2])+ " " + p[4] + " " + p[5]
         print(health_topics_string)
         
-    print("Health topics parsed")
-
 def p_health_topic_contents(p):
     '''health_topic_contents : OPEN_HEALTH_TOPIC HT_DESCRIPTION TITLE URL ID LANGUAGE DATE elements CLOSE_HEALTH_TOPIC health_topic_contents
         |'''
     if (len(p) > 1):
         health_topic_string =  p[2] + " " + p[3] + " " + str(p[4]) + " " + p[5] + " " + p[6] + " " + p[7]
         print(health_topic_string)
-    print ("Health topic contents parsed")
 
 def p_elements(p):
     '''elements : also_called_content full_summary_content group_content language_mapped_topic_content descriptor_content other_language_content primary_institute_content related_topic_content see_reference_content site_content'''
-    print("Elements parsed")
 
 def p_also_called_content(p):
     '''also_called_content : OPEN_ALSO_CALLED TEXT CLOSE_ALSO_CALLED also_called_content
         |'''
     if (len(p) > 1):
         print(p[2])
-    print("Also called content parsed")
 
 def p_full_summary_content(p):
     '''full_summary_content : OPEN_FULL_SUMMARY TEXT CLOSE_FULL_SUMMARY full_summary_content
         |'''
     if (len(p) > 1):
         print(p[2])
-    print("Full summary content parsed")
 
 def p_group_content(p):
     '''group_content : OPEN_GROUP URL ID TEXT CLOSE_GROUP group_content
@@ -376,7 +371,6 @@ def p_group_content(p):
     if (len(p) > 1):
         group_string = p[2] + " " + p[3] + " " + p[4]
         print(group_string)
-    print("Group content parsed")
 
 def p_language_mapped_topic_content(p):
     '''language_mapped_topic_content : OPEN_LANGUAGE_MAPPED_TOPIC URL ID LANGUAGE TEXT CLOSE_LANGUAGE_MAPPED_TOPIC language_mapped_topic_content
@@ -384,7 +378,6 @@ def p_language_mapped_topic_content(p):
     if (len(p) > 1):
         language_mapped_topic_string = p[2] + " " + p[3] + " " + p[4] + " " + p[5]
         print(language_mapped_topic_string)
-    print("Language mapped topic content parsed")
 
 def p_descriptor_content(p):
     '''descriptor_content : OPEN_DESCRIPTOR ID TEXT CLOSE_DESCRIPTOR descriptor_content
@@ -392,7 +385,6 @@ def p_descriptor_content(p):
     if (len(p) > 1):
         descriptor_string = p[2] + " " + p[3]
         print(descriptor_string)
-    print("Descriptor content parsed")
 
 def p_other_language_content(p):
     '''other_language_content : OPEN_OTHER_LANGUAGE VERNACULAR_NAME URL TEXT CLOSE_OTHER_LANGUAGE other_language_content
@@ -400,7 +392,6 @@ def p_other_language_content(p):
     if (len(p) > 1):
         other_language_string = p[2] + " " + p[3] + " " + p[4]
         print(other_language_string)
-    print("Other language content parsed")
 
 def p_primary_institute_content(p):
     '''primary_institute_content : OPEN_PRIMARY_INSTITUTE URL TEXT CLOSE_PRIMARY_INSTITUTE primary_institute_content
@@ -408,7 +399,6 @@ def p_primary_institute_content(p):
     if (len(p) > 1):
         primary_institute_string = p[2] + " " + p[3]
         print(primary_institute_string)
-    print("Primary institute content parsed")
 
 def p_related_topic_content(p):
     '''related_topic_content : OPEN_RELATED_TOPIC URL ID TEXT CLOSE_RELATED_TOPIC related_topic_content
@@ -416,14 +406,12 @@ def p_related_topic_content(p):
     if (len(p) > 1):
         related_topic_string = p[2] + " " + p[3] + " " + p[4]
         print(related_topic_string)
-    print("Related topic content parsed")
 
 def p_see_reference_content(p):
     '''see_reference_content : OPEN_SEE_REFERENCE TEXT CLOSE_SEE_REFERENCE see_reference_content
         |'''
     if (len(p) > 1):
         print(p[2])
-    print("See reference content parsed")
 
 def p_site_content(p):
     '''site_content : OPEN_SITE TITLE URL LANGUAGE_SITE_URL information_content organization_content standard_content CLOSE_SITE site_content
