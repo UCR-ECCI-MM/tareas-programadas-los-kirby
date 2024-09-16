@@ -389,16 +389,17 @@ def p_full_summary_content(p):
         |'''
 
 def p_tags(p):
-    '''tags : XML_H tags XML_H tags
-        | XML_LI tags XML_LI tags
-        | XML_UL tags XML_UL tags
-        | XML_P tags XML_P tags
-        | XML_STRONG tags XML_STRONG tags
-        | OPEN_XML_A HREF tags CLOSE_XML_A tags
-        | OPEN_XML_A HREF TID tags CLOSE_XML_A tags
-        | XML_TAG tags XML_TAG tags
-        | TEXT tags
-        |'''
+    '''tags : XML_H tags
+            | XML_LI tags
+            | XML_UL tags
+            | XML_P tags
+            | XML_STRONG tags
+            | OPEN_XML_A HREF tags CLOSE_XML_A tags
+            | OPEN_XML_A HREF TID tags CLOSE_XML_A tags
+            | XML_TAG tags
+            | TEXT tags
+            |'''
+
     if (len(p) > 1):
        for i in range(len(p)):
             if (p[i] != None):
