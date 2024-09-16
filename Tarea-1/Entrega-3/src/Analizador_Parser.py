@@ -364,12 +364,16 @@ structure = {} # Not yet needed
 def p_health_topics(p):
     '''health_topics : OPEN_HEALTH_TOPICS TOPICS_TOTAL DATA_GENERATION DATE_GENERATED TIME_GENERATED health_topic_contents CLOSE_HEALTH_TOPICS
         |'''
-
+    if (len(p) > 1):
+        health_topics_string = str(p[2])+ " " + p[4] + " " + p[5]
+        write_to_file(health_topics_string)
         
 def p_health_topic_contents(p):
     '''health_topic_contents : OPEN_HEALTH_TOPIC HT_DESCRIPTION TITLE URL ID LANGUAGE DATE elements CLOSE_HEALTH_TOPIC health_topic_contents
         |'''
-
+    if (len(p) > 1):
+        health_topic_string =  p[2] + " " + p[3] + " " + str(p[4]) + " " + p[5] + " " + p[6] + " " + p[7]
+        write_to_file(health_topic_string)
 
 def p_elements(p):
     '''elements : also_called_content full_summary_content group_content language_mapped_topic_content descriptor_content other_language_content primary_institute_content related_topic_content see_reference_content site_content'''
@@ -395,65 +399,106 @@ def p_tags(p):
         | XML_TAG tags XML_TAG tags
         | TEXT tags
         |'''
-
+    if (len(p) > 1):
+       for i in range(len(p)):
+            if (p[i] != None):
+                if (p[i].find("</a>") == -1 and p[i].find("<a") == -1):
+                    write_to_file(p[i])
+    #if (len(p) > 1):
+     #   if p[1]:
+      #      if isinstance(p[1], str):
+       #         # Handle text content
+        #        write_to_file(p[1])
+         #   elif p[1] == '<':
+          #      # Handle XML tags
+           #     write_to_file(p[1])
+            # Continue with the next tag or text
+            #p[0] = p[1] + (p[2] if len(p) > 2 else '')
 
 def p_group_content(p):
     '''group_content : OPEN_GROUP URL ID TEXT CLOSE_GROUP group_content
         |'''
-
+    if (len(p) > 1):
+        group_string = p[2] + " " + p[3] + " " + p[4]
+        write_to_file(group_string)
 
 def p_language_mapped_topic_content(p):
     '''language_mapped_topic_content : OPEN_LANGUAGE_MAPPED_TOPIC URL ID LANGUAGE TEXT CLOSE_LANGUAGE_MAPPED_TOPIC language_mapped_topic_content
         |'''
-
+    if (len(p) > 1):
+        language_mapped_topic_string = p[2] + " " + p[3] + " " + p[4] + " " + p[5]
+        write_to_file(language_mapped_topic_string)
 
 def p_descriptor_content(p):
     '''descriptor_content : OPEN_DESCRIPTOR ID TEXT CLOSE_DESCRIPTOR qualifier_content descriptor_content
         |'''
-
+    if (len(p) > 1):
+        descriptor_string = p[2] + " " + p[3]
+        write_to_file(descriptor_string)
 
 def p_qualifier_content(p):
     '''qualifier_content : OPEN_QUALIFIER ID TEXT CLOSE_QUALIFIER qualifier_content
                         |'''
-
+    if (len(p) > 1):
+        qualifer_string = p[2] + " " + p[3]
+        write_to_file(qualifer_string)
 
 def p_other_language_content(p):
     '''other_language_content : OPEN_OTHER_LANGUAGE VERNACULAR_NAME URL TEXT CLOSE_OTHER_LANGUAGE other_language_content
         |'''
-
+    if (len(p) > 1):
+        other_language_string = p[2] + " " + p[3] + " " + p[4]
+        write_to_file(other_language_string)
 
 def p_primary_institute_content(p):
     '''primary_institute_content : OPEN_PRIMARY_INSTITUTE URL TEXT CLOSE_PRIMARY_INSTITUTE primary_institute_content
         |'''
-
+    if (len(p) > 1):
+        primary_institute_string = p[2] + " " + p[3]
+        write_to_file(primary_institute_string)
 
 def p_related_topic_content(p):
     '''related_topic_content : OPEN_RELATED_TOPIC URL ID TEXT CLOSE_RELATED_TOPIC related_topic_content
         |'''
-
+    if (len(p) > 1):
+        related_topic_string = p[2] + " " + p[3] + " " + p[4]
+        write_to_file(related_topic_string)
 
 def p_see_reference_content(p):
     '''see_reference_content : OPEN_SEE_REFERENCE TEXT CLOSE_SEE_REFERENCE see_reference_content
         |'''
-
+    if (len(p) > 1):
+        write_to_file(p[2])
 
 def p_site_content(p):
     '''site_content : OPEN_SITE TITLE URL LANGUAGE_SITE_URL information_content organization_content standard_content CLOSE_SITE site_content
                     | OPEN_SITE TITLE URL information_content organization_content standard_content CLOSE_SITE site_content
                     |'''
-
+    if (len(p) > 1):
+        if (len(p) > 9):
+            site_content_string = p[2] + " " + p[3] + " " + p[4]
+            write_to_file(site_content_string)
+        else:
+            site_content_string = p[2] + " " + p[3]
+            write_to_file(site_content_string)
 
 def p_information_content(p):
     '''information_content : OPEN_INFORMATION_CATEGORY TEXT CLOSE_INFORMATION_CATEGORY information_content
-                        |'''     
+                        |'''
+    if (len(p) > 1):
+        write_to_file(p[2])        
 
 def p_organization_content(p):
     '''organization_content : OPEN_ORGANIZATION TEXT CLOSE_ORGANIZATION organization_content
                         |'''
+    if (len(p) > 1):
+        write_to_file(p[2])
 
 def p_standard_content(p):
     '''standard_content : OPEN_STANDARD_DESCRIPTION TEXT CLOSE_STANDARD_DESCRIPTION standard_content
                     |'''
+    if (len(p) > 1):
+        write_to_file(p[2])
 
 # Define rule for error handling
 def p_error(t):
