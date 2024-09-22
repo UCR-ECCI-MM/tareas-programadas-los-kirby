@@ -480,20 +480,20 @@ def p_tags(p):
 
     if length == 3:
         if p[2] != None:
-            p[0] = p[1] + p[2]
+            p[0] = " " + p[1] + p[2]
     elif length == 6:
         p[0] = p[2]
         if p[5] != None:
-            p[0] = p[2] + p[3] + p[5]
+            p[0] = " " + p[2] + " " + p[3] + p[5]
         else:
-            p[0] = p[2] + p[3]
+            p[0] = " " + p[2] + " " + p[3]
     elif length == 7:
         if p[6] != None:
-            p[0] = p[2] + p[4] + p[6]
+            p[0] = " " + p[2] + " " + p[4]  + p[6]
         else:
-            p[0] = p[2] + p[4]
+            p[0] = " " + p[2] + p[4]
     else:
-        p[0] = ""
+        p[0] = " "
 
 def p_group_content(p):
     '''group_content : OPEN_GROUP URL ID TEXT CLOSE_GROUP group_content
