@@ -99,6 +99,9 @@ class MedicalDictionaryApp:
         self.create_rounded_button(button_frame, "Data graphs", self.accion_boton_6, 1, 2, "Graphs about medical data", "images_gui/6.jpg")
 
     def show_topic_list(self):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
         # Clear the main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
@@ -115,17 +118,30 @@ class MedicalDictionaryApp:
                         topic_ids.append(topic_id)
 
         if also_called_list:
-            for index, term in enumerate(also_called_list):
-                button = ttk.Button(self.main_frame, text=term, command=lambda idx=index: self.show_topic_details(topic_ids[idx]), style="Rounded.TButton")
+            # Sort the terms alphabetically
+            sorted_terms = sorted(zip(also_called_list, topic_ids), key=lambda x: x[0])
+
+            # Create a scrollable frame using the new method
+            canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+            # Create a frame for centering buttons
+            button_frame = ttk.Frame(scrollable_frame)
+            button_frame.pack(pady=20)  # Add some padding to the frame
+
+            for term, topic_id in sorted_terms:
+                button = ttk.Button(button_frame, text=term, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
                 button.pack(pady=5)
 
-            back_button = ttk.Button(self.main_frame, text="Go back", command=self.create_main_screen, style="Rounded.TButton")
+            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
             back_button.pack(pady=20)
         else:
             messagebox.showinfo("Information", "No names in 'also_called' available.")
             self.create_main_screen()
 
     def show_topic_details(self, topic_id):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
         # Clear the main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
@@ -152,52 +168,56 @@ class MedicalDictionaryApp:
                 if 'site' in elements:
                     sites.extend(elements['site'])
 
-            details_text = tk.Text(self.main_frame, wrap=tk.WORD, bg=self.main_frame.cget("bg"), borderwidth=0)
+            # Create a scrollable frame for details
+            canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+            details_text = tk.Text(scrollable_frame, wrap=tk.WORD, bg=self.main_frame.cget("bg"), borderwidth=0)
             details_text.insert(tk.END, details)
             details_text.configure(state='disabled')
             details_text.pack(pady=20, padx=10, fill=tk.BOTH, expand=True)
 
-            new_view_button = ttk.Button(self.main_frame, text="Find extra info about this topic", command=lambda: self.show_topic_sites(sites), style="Rounded.TButton")
+            new_view_button = ttk.Button(scrollable_frame, text="Find extra info about this topic", command=lambda: self.show_topic_sites(sites), style="Rounded.TButton")
             new_view_button.pack(pady=10)
 
-            back_button = ttk.Button(self.main_frame, text="Go back", command=self.create_main_screen, style="Rounded.TButton")
+            back_button = ttk.Button(scrollable_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
             back_button.pack(pady=20)
 
     def show_topic_sites(self, sites):
-        for widget in self.main_frame.winfo_children():
-            widget.destroy()
-
-        title_label = tk.Label(self.main_frame, text="Click here to see related articles from this topic:", font=("Arial", 14), bg=self.main_frame.cget("bg"))
-        title_label.pack(pady=20)
-
-        if sites:
-            for site in sites:
-                site_label = tk.Label(self.main_frame, text=site, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
-                site_label.pack(pady=5)
-                site_label.bind("<Button-1>", lambda e, url=site: self.open_url(url))
-
-        back_button = ttk.Button(self.main_frame, text="Go Back", command=self.create_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20)
-
-    def show_topic_sites(self, sites):
-        # Hide the search and top frame
-        self.search_frame.pack_forget()
+        # Hide the top frame and search bar
         self.top_frame.pack_forget()
-
+        self.search_frame.pack_forget()
+        # Clear the main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-        title_label = tk.Label(self.main_frame, text="Click here to see related articles from this topic:", font=("Arial", 14), bg=self.main_frame.cget("bg"))
+        title_label = tk.Label(self.main_frame, text="Related articles from this topic:", font=("Montserrat", 14), bg=self.main_frame.cget("bg"))
         title_label.pack(pady=20)
+
+        # Create a scrollable frame for sites
+        canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
         if sites:
             for site in sites:
-                site_label = tk.Label(self.main_frame, text=site, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                site_label = tk.Label(scrollable_frame, text=site, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
                 site_label.pack(pady=5)
                 site_label.bind("<Button-1>", lambda e, url=site: self.open_url(url))
 
-        back_button = ttk.Button(self.main_frame, text="Go Back", command=self.create_main_screen, style="Rounded.TButton")
+        back_button = ttk.Button(scrollable_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
         back_button.pack(pady=20)
+
+    def return_to_main_screen(self):
+        # Clear the current main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        # Create top frame for the search area
+        self.top_frame.pack(fill=tk.BOTH, expand=True)
+        self.search_frame.pack(pady=20)
+
+        # Create a frame for the main screen
+        self.main_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.create_main_screen()  # Call to recreate buttons or any additional UI
 
     def open_url(self, url):
         import webbrowser
@@ -222,13 +242,36 @@ class MedicalDictionaryApp:
     def accion_boton_6(self):
         messagebox.showinfo("Button 6 Clicked", "Action for Data graphs")
 
+    def create_scrollable_frame(self, parent):
+        # Create a canvas
+        canvas = tk.Canvas(parent)
+        scrollbar = ttk.Scrollbar(parent, orient="vertical", command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+
+        # Configure the scrollable frame
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+
+        # Configure the scrollbar
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Pack the canvas and scrollbar
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        return canvas, scrollable_frame
+
 def init_gui():
     root = tk.Tk()
     app = MedicalDictionaryApp(root)
     root.mainloop()
 
 # TO DO: 
-# - Buscar manera de insertar una barra para hacer scroll en las ventanas
-# - Hacer que todos los botones del nombre de los topics sean del mismo tamaño y ordenarlos alfabéticamente
+# - Centrar botones de topic_list
 # - Modificar la función show_topic_site para que muestre bien los datos
 # - Agregar las demás funciones de los botones
+# - Revisar porque despues de un Go Back, el frame de search aparece abajo del frame de los botones
