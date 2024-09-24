@@ -9,6 +9,7 @@
 from pathlib import Path
 from lexer import build_lexer
 from parser import build_parser, diccionary_health_content, list_health_topics
+from gui import init_gui
 import sys
 
 
@@ -31,6 +32,8 @@ def main():
     # Analizar los datos
     parser.parse(data, lexer=lexer)
 
-    print("Information parsed successfully and stored in health_topics.txt")
+    # print("Information parsed successfully and stored in health_topics.txt")
+    init_gui()
+
 if __name__ == "__main__":
     main()
