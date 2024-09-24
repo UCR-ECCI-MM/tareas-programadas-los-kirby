@@ -78,7 +78,7 @@ class MedicalDictionaryApp:
             button_frame.grid_columnconfigure(i, weight=1, uniform="group1")
 
         # Create rounded buttons with grid positions and corresponding labels
-        self.create_rounded_button(button_frame, "List of Diseases and Procedures", self.accion_boton_1, 0, 0, "Find info about different medical topics")
+        self.create_rounded_button(button_frame, "List of Diseases and Procedures", self.show_topic_list, 0, 0, "Find info about different medical topics")
         self.create_rounded_button(button_frame, "Health Organizations", self.accion_boton_2, 0, 1, "Catalog with different medical organizations")
         self.create_rounded_button(button_frame, "Basic Information about Dataset", self.accion_boton_3, 0, 2, "Amount of health topics, date, and time of generation of the XML file")
 
@@ -87,6 +87,87 @@ class MedicalDictionaryApp:
         self.create_rounded_button(button_frame, "Extra information about a topic", self.accion_boton_5, 1, 1, "Relevant information about various health articles")
         self.create_rounded_button(button_frame, "Data graphs", self.accion_boton_6, 1, 2, "Graphs about medical data")
 
+    def show_topic_list(self):
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        also_called_list = []
+        topic_ids = []
+
+        for topic_id, topic_data in diccionary_health_content.items():
+            for entry in topic_data:
+                elements = entry[6]
+                if 'also_called' in elements:
+                    for also_called in elements['also_called']:
+                        also_called_list.append(also_called)
+                        topic_ids.append(topic_id)
+
+        if also_called_list:
+            for index, term in enumerate(also_called_list):
+                button = ttk.Button(self.main_frame, text=term, command=lambda idx=index: self.show_topic_details(topic_ids[idx]), style="Rounded.TButton")
+                button.pack(pady=5)
+
+            back_button = ttk.Button(self.main_frame, text="Go back", command=self.create_main_screen, style="Rounded.TButton")
+            back_button.pack(pady=20)
+        else:
+            messagebox.showinfo("Information", "No names in 'also_called' available.")
+            self.create_main_screen()
+
+    def show_topic_details(self, topic_id):
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        if topic_id in diccionary_health_content:
+            topic_data = diccionary_health_content[topic_id]
+            details = ""
+            sites = []
+
+            for entry in topic_data:
+                description, title, url, id, language, date, elements = entry
+                details += f"Topic Information\n"
+                details += f"Title: {title}, ID: {id}\n"
+                details += f"Description: {description}\n"
+                details += f"Language: {language}\n"
+                details += f"Date: {date}\n"
+                
+                url_label = tk.Label(self.main_frame, text=url, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
+                url_label.pack(pady=5)
+                url_label.bind("<Button-1>", lambda e: self.open_url(url))
+
+                if 'full_summary' in elements:
+                    details += f"Summary: {' '.join(elements['full_summary'])}\n"
+                if 'site' in elements:
+                    sites.extend(elements['site'])
+
+            details_text = tk.Text(self.main_frame, wrap=tk.WORD, bg=self.main_frame.cget("bg"), borderwidth=0)
+            details_text.insert(tk.END, details)
+            details_text.configure(state='disabled')
+            details_text.pack(pady=20, padx=10, fill=tk.BOTH, expand=True)
+
+            new_view_button = ttk.Button(self.main_frame, text="Find extra info about this topic", command=lambda: self.show_topic_sites(sites), style="Rounded.TButton")
+            new_view_button.pack(pady=10)
+
+            back_button = ttk.Button(self.main_frame, text="Go back", command=self.create_main_screen, style="Rounded.TButton")
+            back_button.pack(pady=20)
+
+    def show_topic_sites(self, sites):
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        title_label = tk.Label(self.main_frame, text="Click here to see related articles from this topic:", font=("Arial", 14), bg=self.main_frame.cget("bg"))
+        title_label.pack(pady=20)
+
+        if sites:
+            for site in sites:
+                site_label = tk.Label(self.main_frame, text=site, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                site_label.pack(pady=5)
+                site_label.bind("<Button-1>", lambda e, url=site: self.open_url(url))
+
+        back_button = ttk.Button(self.main_frame, text="Go Back", command=self.create_main_screen, style="Rounded.TButton")
+        back_button.pack(pady=20)
+
     def open_url(self, url):
         import webbrowser
         webbrowser.open(url)
@@ -94,9 +175,6 @@ class MedicalDictionaryApp:
     def search(self):
         query = self.entry.get()
         print(f"Searching for: {query}")
-
-    def accion_boton_1(self):
-        messagebox.showinfo("Button 1 Clicked", "Action for List of Diseases and Procedures")
 
     def accion_boton_2(self):
         messagebox.showinfo("Button 2 Clicked", "Action for Health Organizations")
@@ -118,5 +196,8 @@ def init_gui():
     app = MedicalDictionaryApp(root)
     root.mainloop()
 
-def main():
-    init_gui()
+# TO DO: 
+# - Buscar manera de insertar una barra para hacer scroll en las ventanas
+# - Hacer que todos los botones del nombre de los topics sean del mismo tamaño y ordenarlos alfabéticamente
+# - Modificar la función show_topic_site para que muestre bien los datos
+# - Agregar las demás funciones de los botones
