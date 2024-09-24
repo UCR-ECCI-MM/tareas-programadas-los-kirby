@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from parser import diccionary_health_content
+from tkinter import PhotoImage  # Asegúrate de importar PhotoImage
+from PIL import Image, ImageTk  # Importa las clases necesarias de Pillow
 
 class MedicalDictionaryApp:
     def __init__(self, root):
@@ -29,18 +31,27 @@ class MedicalDictionaryApp:
         # Create the main screen
         self.create_main_screen()
 
-    def create_rounded_button(self, parent, text, command, row, column, label_text=""):
+    def create_rounded_button(self, parent, text, command, row, column, label_text="", image_path=None):
         # Create a frame to simulate rounded corners
         button_frame = tk.Frame(parent, bg="white", padx=5, pady=5)
 
         # Create a button inside the frame with a fixed width and increased width
-        button = ttk.Button(button_frame, text=text, command=command, style="Rounded.TButton", width=30)
+        button = ttk.Button(button_frame, text=text, command=command, style="Rounded.TButton", width=40)
+
+        # Load the image if image_path is provided
+        if image_path:
+            img = Image.open(image_path)  # Open the image file
+            img = img.resize((30, 30), Image.LANCZOS)  # Adjust the image size
+            photo = ImageTk.PhotoImage(img)  # Image to PhotoImage
+            button.config(image=photo, compound=tk.TOP)  # Set image above text
+            button.image = photo  # Keep a reference to avoid garbage collection
+
         button.pack(padx=10, pady=(10, 0))  # Padding to create space above the label
 
-        # Create a label below the button
+        # Create a label below the button if label_text is provided
         if label_text:
-            label = tk.Label(button_frame, text=label_text, bg="white", fg="black", font=("Source Sans 3", 9), wraplength=150)
-            label.pack(pady=(5, 0))  # Padding to create space below the button
+            label = tk.Label(button_frame, text=label_text, bg="white", fg="black", font=("Source Sans 3", 9))
+            label.pack(pady=(5, 0))  # Padding to create space above the label
 
         # Use grid for the button frame and make it sticky to fill the space
         button_frame.grid(row=row, column=column, padx=5, pady=5, sticky='nsew')
@@ -78,14 +89,14 @@ class MedicalDictionaryApp:
             button_frame.grid_columnconfigure(i, weight=1, uniform="group1")
 
         # Create rounded buttons with grid positions and corresponding labels
-        self.create_rounded_button(button_frame, "List of Diseases and Procedures", self.show_topic_list, 0, 0, "Find info about different medical topics")
-        self.create_rounded_button(button_frame, "Health Organizations", self.accion_boton_2, 0, 1, "Catalog with different medical organizations")
-        self.create_rounded_button(button_frame, "Basic Information about Dataset", self.accion_boton_3, 0, 2, "Amount of health topics, date, and time of generation of the XML file")
+        self.create_rounded_button(button_frame, "List of Diseases and Procedures", self.show_topic_list, 0, 0, "Find info about different medical topics", "images_gui/1.jpg")
+        self.create_rounded_button(button_frame, "Health Organizations", self.accion_boton_2, 0, 1, "Catalog with different medical organizations", "images_gui/2.jpg")
+        self.create_rounded_button(button_frame, "Basic Information about Dataset", self.accion_boton_3, 0, 2, "Amount of health topics, date, and time of generation of the XML file", "images_gui/3.jpg")
 
         # Create additional buttons in a new row
-        self.create_rounded_button(button_frame, "Other languages for data", self.accion_boton_4, 1, 0, "Articles in different languages")
-        self.create_rounded_button(button_frame, "Extra information about a topic", self.accion_boton_5, 1, 1, "Relevant information about various health articles")
-        self.create_rounded_button(button_frame, "Data graphs", self.accion_boton_6, 1, 2, "Graphs about medical data")
+        self.create_rounded_button(button_frame, "Other languages for data", self.accion_boton_4, 1, 0, "Articles in different languages", "images_gui/4.jpg")
+        self.create_rounded_button(button_frame, "Find extra information about a topic", self.accion_boton_5, 1, 1, "Relevant information about various health articles", "images_gui/5.jpg")
+        self.create_rounded_button(button_frame, "Data graphs", self.accion_boton_6, 1, 2, "Graphs about medical data", "images_gui/6.jpg")
 
     def show_topic_list(self):
         # Clear the main frame
@@ -153,6 +164,26 @@ class MedicalDictionaryApp:
             back_button.pack(pady=20)
 
     def show_topic_sites(self, sites):
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        title_label = tk.Label(self.main_frame, text="Click here to see related articles from this topic:", font=("Arial", 14), bg=self.main_frame.cget("bg"))
+        title_label.pack(pady=20)
+
+        if sites:
+            for site in sites:
+                site_label = tk.Label(self.main_frame, text=site, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                site_label.pack(pady=5)
+                site_label.bind("<Button-1>", lambda e, url=site: self.open_url(url))
+
+        back_button = ttk.Button(self.main_frame, text="Go Back", command=self.create_main_screen, style="Rounded.TButton")
+        back_button.pack(pady=20)
+
+    def show_topic_sites(self, sites):
+        # Hide the search and top frame
+        self.search_frame.pack_forget()
+        self.top_frame.pack_forget()
+
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
