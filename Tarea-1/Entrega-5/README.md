@@ -27,12 +27,23 @@ Para compilar el lexer, parser y el GUI es necesario importar los siguientes paq
 
         sudo apt-get install python3-tk
 
+        pip install pillow
+
 - Para los gráficos: NumPy
 
         pip install numpy
 
 
         pip install matplotlib
+
+
+- Si tiene problemas instalando Pillow en máquina virtual hacer lo siguiente:
+
+        python3 -m venv myenv
+
+        source myenv/bin/activate
+
+        pip install pillow
 
 Para correr el programa y usar el GUI introduzca el siguiente comando en la terminal (dependiendo de la versión de Python instalada),
 estando dentro de la carpeta [Tarea-1/Entrega-5/src:](Tarea-1/Entrega-5/src)
