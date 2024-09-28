@@ -102,6 +102,7 @@ class MedicalDictionaryApp:
         # Hide the top frame and search bar
         self.top_frame.pack_forget()
         self.search_frame.pack_forget()
+
         # Clear the main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
@@ -124,16 +125,19 @@ class MedicalDictionaryApp:
             # Create a scrollable frame using the new method
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
+            # Make scrollable_frame fill the entire area and center content
+            scrollable_frame.pack(expand=True, fill='both')
+
             # Create a frame for centering buttons
             button_frame = ttk.Frame(scrollable_frame)
-            button_frame.pack(pady=20)  # Add some padding to the frame
+            button_frame.pack(anchor='center')  # Center the frame within the scrollable area
 
             for term, topic_id in sorted_terms:
                 button = ttk.Button(button_frame, text=term, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
-                button.pack(pady=5)
+                button.pack(pady=5, anchor='center')  # Center each button
 
             back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
-            back_button.pack(pady=20)
+            back_button.pack(pady=20, anchor='center')  # Center the back button
         else:
             messagebox.showinfo("Information", "No names in 'also_called' available.")
             self.create_main_screen()
@@ -159,8 +163,9 @@ class MedicalDictionaryApp:
                 details += f"Language: {language}\n"
                 details += f"Date: {date}\n"
                 
+                # Display URL as a clickable link, centered
                 url_label = tk.Label(self.main_frame, text=url, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
-                url_label.pack(pady=5)
+                url_label.pack(pady=5, anchor='center')  # Center the URL
                 url_label.bind("<Button-1>", lambda e: self.open_url(url))
 
                 if 'full_summary' in elements:
@@ -171,39 +176,86 @@ class MedicalDictionaryApp:
             # Create a scrollable frame for details
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
+            # Make sure the scrollable frame expands and is centered
+            scrollable_frame.pack(expand=True, fill='both')
+
+            # Center the details text
             details_text = tk.Text(scrollable_frame, wrap=tk.WORD, bg=self.main_frame.cget("bg"), borderwidth=0)
             details_text.insert(tk.END, details)
             details_text.configure(state='disabled')
-            details_text.pack(pady=20, padx=10, fill=tk.BOTH, expand=True)
+            details_text.pack(pady=20, padx=10, fill=tk.BOTH, expand=True, anchor='center')  # Center the text box
 
+            # Center the button to find extra info
             new_view_button = ttk.Button(scrollable_frame, text="Find extra info about this topic", command=lambda: self.show_topic_sites(sites), style="Rounded.TButton")
-            new_view_button.pack(pady=10)
+            new_view_button.pack(pady=10, anchor='center')
 
+            # Center the "Go back" button
             back_button = ttk.Button(scrollable_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
-            back_button.pack(pady=20)
+            back_button.pack(pady=20, anchor='center')
+
 
     def show_topic_sites(self, sites):
         # Hide the top frame and search bar
         self.top_frame.pack_forget()
         self.search_frame.pack_forget()
+
         # Clear the main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
+        # Title label for the entire section, centered
         title_label = tk.Label(self.main_frame, text="Related articles from this topic:", font=("Montserrat", 14), bg=self.main_frame.cget("bg"))
-        title_label.pack(pady=20)
+        title_label.pack(pady=20, anchor='center')
 
         # Create a scrollable frame for sites
         canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
+        # Frame to hold content centrally
+        content_frame = ttk.Frame(scrollable_frame)
+        content_frame.grid_columnconfigure(0, weight=1)  # Center column
+
+        # Ensure content_frame is centered within the scrollable_frame
+        content_frame.pack(expand=True, padx=20, pady=20)
+
         if sites:
             for site in sites:
-                site_label = tk.Label(scrollable_frame, text=site, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
-                site_label.pack(pady=5)
-                site_label.bind("<Button-1>", lambda e, url=site: self.open_url(url))
+                # Display the title in larger font, centered
+                title = site.get('title', 'No Title')
+                title_label = tk.Label(content_frame, text=title, font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
+                title_label.grid(pady=(10, 5), sticky="ew")  # Expand across center
 
-        back_button = ttk.Button(scrollable_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20)
+                # Display the URL as a clickable link, centered
+                url = site.get('url', '#')
+                url_label = tk.Label(content_frame, text=url, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                url_label.grid(pady=5, sticky="ew")
+                url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
+
+                # Display other content like information, organization, and standard content, centered
+                information_content = site.get('information_content', [])
+                if information_content:
+                    info_label = tk.Label(content_frame, text="Info: " + ", ".join(information_content), bg=self.main_frame.cget("bg"))
+                    info_label.grid(pady=5, sticky="ew")
+
+                organization_content = site.get('organization_content', [])
+                if organization_content:
+                    org_label = tk.Label(content_frame, text="Organization: " + ", ".join(organization_content), bg=self.main_frame.cget("bg"))
+                    org_label.grid(pady=5, sticky="ew")
+
+                standard_content = site.get('standard_content', [])
+                if standard_content:
+                    std_label = tk.Label(content_frame, text="Standard: " + ", ".join(standard_content), bg=self.main_frame.cget("bg"))
+                    std_label.grid(pady=5, sticky="ew")
+
+                # Optional: Handle language_site_url (for multilingual support), centered
+                language_site_url = site.get('language_site_url', None)
+                if language_site_url:
+                    lang_url_label = tk.Label(content_frame, text=language_site_url, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                    lang_url_label.grid(pady=5, sticky="ew")
+                    lang_url_label.bind("<Button-1>", lambda e, link=language_site_url: self.open_url(link))
+
+        # Center the Go Back button at the bottom
+        back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
+        back_button.grid(pady=20, sticky="ew")
 
     def return_to_main_screen(self):
         # Clear the current main frame
@@ -271,7 +323,6 @@ def init_gui():
     root.mainloop()
 
 # TO DO: 
-# - Centrar botones de topic_list
-# - Modificar la función show_topic_site para que muestre bien los datos
+# - Centrar bien los botones de sites
 # - Agregar las demás funciones de los botones
 # - Revisar porque despues de un Go Back, el frame de search aparece abajo del frame de los botones
