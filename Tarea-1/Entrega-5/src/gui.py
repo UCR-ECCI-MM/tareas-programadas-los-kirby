@@ -27,7 +27,6 @@ class MedicalDictionaryApp:
         # Create a frame for the main screen
         self.main_frame = tk.Frame(self.root, bg=self.bg_color)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
-
         # Create the main screen
         self.create_main_screen()
 
@@ -90,11 +89,11 @@ class MedicalDictionaryApp:
 
         # Create rounded buttons with grid positions and corresponding labels
         self.create_rounded_button(button_frame, "List of Diseases and Procedures", self.show_topic_list, 0, 0, "Find info about different medical topics", "images_gui/1.jpg")
-        self.create_rounded_button(button_frame, "Health Organizations", self.accion_boton_2, 0, 1, "Catalog with different medical organizations", "images_gui/2.jpg")
+        self.create_rounded_button(button_frame, "Health Organizations", self.show_primary_institutes, 0, 1, "Catalog with different medical organizations", "images_gui/2.jpg")
         self.create_rounded_button(button_frame, "Basic Information about Dataset", self.accion_boton_3, 0, 2, "Amount of health topics, date, and time of generation of the XML file", "images_gui/3.jpg")
 
         # Create additional buttons in a new row
-        self.create_rounded_button(button_frame, "Other languages for data", self.accion_boton_4, 1, 0, "Articles in different languages", "images_gui/4.jpg")
+        self.create_rounded_button(button_frame, "Other languages for data", self.show_language_mapped_topics, 1, 0, "Articles in different languages", "images_gui/4.jpg")
         self.create_rounded_button(button_frame, "Find extra information about a topic", self.accion_boton_5, 1, 1, "Relevant information about various health articles", "images_gui/5.jpg")
         self.create_rounded_button(button_frame, "Data graphs", self.accion_boton_6, 1, 2, "Graphs about medical data", "images_gui/6.jpg")
 
@@ -193,7 +192,6 @@ class MedicalDictionaryApp:
             back_button = ttk.Button(scrollable_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
             back_button.pack(pady=20, anchor='center')
 
-
     def show_topic_sites(self, sites):
         # Hide the top frame and search bar
         self.top_frame.pack_forget()
@@ -257,6 +255,117 @@ class MedicalDictionaryApp:
         back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
         back_button.grid(pady=20, sticky="ew")
 
+    def show_primary_institutes(self):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
+
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        topic_ids = []
+        urls = []  # Store URLs
+        texts = []  # Store institute names
+
+        # Loop through the dictionary to extract primary institute content
+        for topic_id, topic_data in diccionary_health_content.items():
+            for entry in topic_data:
+                elements = entry[6]
+                if 'primary_institute' in elements:
+                    for primary_institute in elements['primary_institute']:
+                        # Extract 'text' (institute name) and 'url'
+                        texts.append(primary_institute['text'])
+                        urls.append(primary_institute['url'])
+                        topic_ids.append(topic_id)
+
+        if texts:
+            # Sort the institutes alphabetically along with their URLs and topic IDs
+            sorted_terms = sorted(zip(texts, urls, topic_ids), key=lambda x: x[0])
+
+            # Create a scrollable frame using the new method
+            canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+            # Make scrollable_frame fill the entire area and center content
+            scrollable_frame.pack(expand=True, fill='both')
+
+            # Create a frame for centering buttons
+            button_frame = ttk.Frame(scrollable_frame)
+            button_frame.pack(anchor='center')  # Center the frame within the scrollable area
+
+            for term, url, topic_id in sorted_terms:
+                # Create a button for each primary institute
+                button = ttk.Button(button_frame, text=term, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
+                button.pack(pady=5, anchor='center')  # Center each button
+
+                # Display the URL as a clickable label below each button
+                url_label = tk.Label(button_frame, text=url, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
+                url_label.pack(anchor='center')  # Center the URL
+                url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
+
+            # Go back button at the bottom
+            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
+            back_button.pack(pady=20, anchor='center')  # Center the back button
+        else:
+            messagebox.showinfo("Information", "No primary institutes available.")
+            self.create_main_screen()
+
+    def show_language_mapped_topics(self):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
+
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        languages = []
+        topic_ids = []
+        urls = []  # Store URLs
+        texts = []  # Store language names
+
+        # Loop through the dictionary to extract language_mapped_topic_content
+        for topic_id, topic_data in diccionary_health_content.items():
+            for entry in topic_data:
+                elements = entry[6]
+                if 'language_mapped_topic' in elements:
+                    for language_mapped_topic in elements['language_mapped_topic']:
+                        # Extract 'text' (language name) and 'url'
+                        texts.append(language_mapped_topic['text'])
+                        urls.append(language_mapped_topic['url'])
+                        topic_ids.append(topic_id)
+
+        if texts:
+            # Sort the languages alphabetically along with their URLs and topic IDs
+            sorted_terms = sorted(zip(texts, urls, topic_ids), key=lambda x: x[0])
+
+            # Create a scrollable frame using the new method
+            canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+            # Make scrollable_frame fill the entire area and center content
+            scrollable_frame.pack(expand=True, fill='both')
+
+            # Create a frame for centering buttons
+            button_frame = ttk.Frame(scrollable_frame)
+            button_frame.pack(anchor='center')  # Center the frame within the scrollable area
+
+            for term, url, topic_id in sorted_terms:
+                # Create a button for each language-mapped topic
+                button = ttk.Button(button_frame, text=term, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
+                button.pack(pady=5, anchor='center')  # Center each button
+
+                # Display the URL as a clickable label below each button
+                url_label = tk.Label(button_frame, text=url, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
+                url_label.pack(anchor='center')  # Center the URL
+                url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
+
+            # Go back button at the bottom
+            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
+            back_button.pack(pady=20, anchor='center')  # Center the back button
+        else:
+            messagebox.showinfo("Information", "No language-mapped topics available.")
+            self.create_main_screen()
+
     def return_to_main_screen(self):
         # Clear the current main frame
         for widget in self.main_frame.winfo_children():
@@ -279,14 +388,8 @@ class MedicalDictionaryApp:
         query = self.entry.get()
         print(f"Searching for: {query}")
 
-    def accion_boton_2(self):
-        messagebox.showinfo("Button 2 Clicked", "Action for Health Organizations")
-
     def accion_boton_3(self):
         messagebox.showinfo("Button 3 Clicked", "Action for Basic Information about Dataset")
-
-    def accion_boton_4(self):
-        messagebox.showinfo("Button 4 Clicked", "Action for Other languages for data")
 
     def accion_boton_5(self):
         messagebox.showinfo("Button 5 Clicked", "Action for Find extra information about a topic")
@@ -324,5 +427,7 @@ def init_gui():
 
 # TO DO: 
 # - Centrar bien los botones de sites
-# - Agregar las demás funciones de los botones
+# - Agregar las demás funciones de los botones (basic info, extra info, data graphs)
+# - Agregar la funcionalidad de búsqueda
+# - Cambiar el formato de los botones y datos de language_mapped_topics y primary_institutes para que se vea mejor
 # - Revisar porque despues de un Go Back, el frame de search aparece abajo del frame de los botones
