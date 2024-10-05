@@ -2,8 +2,13 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 from parser import diccionary_health_content
-from tkinter import PhotoImage  # Asegúrate de importar PhotoImage
-from PIL import Image, ImageTk  # Importa las clases necesarias de Pillow
+from tkinter import PhotoImage
+from PIL import Image, ImageTk
+import matplotlib.pyplot as plt
+import pandas as pd
+from collections import Counter
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
 
 class MedicalDictionaryApp:
     def __init__(self, root):
@@ -95,7 +100,7 @@ class MedicalDictionaryApp:
         # Create additional buttons in a new row
         self.create_rounded_button(button_frame, "Other languages for data", self.show_language_mapped_topics, 1, 0, "Articles in different languages", "images_gui/4.jpg")
         self.create_rounded_button(button_frame, "Find extra information about a topic", self.accion_boton_5, 1, 1, "Relevant information about various health articles", "images_gui/5.jpg")
-        self.create_rounded_button(button_frame, "Data graphs", self.accion_boton_6, 1, 2, "Graphs about medical data", "images_gui/6.jpg")
+        self.create_rounded_button(button_frame, "Data graphs", self.graph_data_window, 1, 2, "Graphs about medical data", "images_gui/6.jpg")
 
     def show_topic_list(self):
         # Hide the top frame and search bar
@@ -379,7 +384,157 @@ class MedicalDictionaryApp:
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
         self.create_main_screen()  # Call to recreate buttons or any additional UI
+    def graph_data_window(self):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
 
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        # Title label for the entire section, centered
+        title_label = tk.Label(self.main_frame, text="Graphs", font=("Montserrat", 14), bg=self.main_frame.cget("bg"))
+        title_label.pack(pady=20, anchor='center')
+
+        # Create a scrollable frame for sites
+        canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+        # Frame to hold content centrally
+        content_frame = ttk.Frame(scrollable_frame)
+        content_frame.grid_columnconfigure(0, weight=1)  # Allow column to expand
+
+        # Create buttons for graph options
+        graph_button_1 = ttk.Button(content_frame, text="Graph 1", command=self.graph_data_1, style="Rounded.TButton")
+        graph_button_1.grid(row=0, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
+
+        graph_button_2 = ttk.Button(content_frame, text="Graph 2", command=self.graph_data_2, style="Rounded.TButton")
+        graph_button_2.grid(row=1, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
+
+        # Pack the content_frame to ensure it's visible
+        content_frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)  # Center and fill
+
+        # Center content_frame within the scrollable_frame
+        scrollable_frame.pack(expand=True, fill=tk.BOTH)
+
+        # Center the "Go back" button
+        back_button = ttk.Button(scrollable_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
+        back_button.pack(pady=20, anchor='center')
+
+    def graph_data_1(self):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
+
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        # Create a scrollable frame
+        canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+        # Frame to hold content centrally
+        content_frame = ttk.Frame(scrollable_frame)
+        content_frame.grid_columnconfigure(0, weight=1)  # Center column
+
+        # Ensure content_frame is centered within the scrollable_frame
+        content_frame.pack(expand=True, padx=20, pady=20)
+
+        # Extract data for sites by topic
+        data = []
+        for topic_id, topic_info in diccionary_health_content.items():
+            # Access the first tuple in the list
+            description, title, url, id, language, date, elements = topic_info[0]
+
+            # Get the number of sites
+            num_sites = len(elements.get('site', [])) if isinstance(elements, dict) else 0
+            
+            data.append({'Title': title, 'Num_Sites': num_sites})
+
+        # Convert to DataFrame for ease of use
+        df = pd.DataFrame(data)
+
+        # Sort the DataFrame by number of sites
+        df = df.sort_values(by='Num_Sites', ascending=False)
+
+        # Create a Figure for the plot
+        fig = Figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+
+        # Create the bar chart
+        ax.bar(df['Title'], df['Num_Sites'], color='skyblue')
+        ax.set_xlabel('Health Topics')
+        ax.set_ylabel('Number of Sites')
+        ax.set_title('Health Topics with Most Sites')
+
+        # Set ticks and labels
+        ax.set_xticks(range(len(df['Title'])))
+        ax.set_xticklabels(df['Title'], rotation=45, ha='right')
+
+        # Display the plot
+        canvas = FigureCanvasTkAgg(fig, master=content_frame)  # Create a canvas for the plot
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+
+        # Center the Go Back button at the bottom
+        back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
+        back_button.pack(pady=20, fill='x')  # Use pack for the back button
+
+    def graph_data_2(self):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
+
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        # Create a scrollable frame
+        canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+        # Frame to hold content centrally
+        content_frame = ttk.Frame(scrollable_frame)
+        content_frame.grid_columnconfigure(0, weight=1)  # Center column
+
+        # Ensure content_frame is centered within the scrollable_frame
+        content_frame.pack(expand=True, padx=20, pady=20)
+
+        # Extract languages
+        languages = []
+        for topic_info in diccionary_health_content.values():
+            # Access the first tuple in the list
+            _, _, _, _, language, _, _ = topic_info[0]
+            languages.append(language)
+
+        # Count the frequency of each language
+        language_counts = Counter(languages)
+
+        # Create a DataFrame with the data
+        df_lang = pd.DataFrame(language_counts.items(), columns=['Language', 'Count'])
+
+        # Create a Figure for the plot
+        fig = Figure(figsize=(8, 5))
+        ax = fig.add_subplot(111)
+
+        # Create the bar chart for language frequencies
+        ax.bar(df_lang['Language'], df_lang['Count'], color='lightgreen')
+        ax.set_xlabel('Languages')
+        ax.set_ylabel('Frequency')
+        ax.set_title('Most Frequent Languages in Health Topics')
+
+        # Set ticks and labels
+        ax.set_xticks(range(len(df_lang['Language'])))
+        ax.set_xticklabels(df_lang['Language'], rotation=45)
+
+        # Display the plot
+        canvas = FigureCanvasTkAgg(fig, master=content_frame)  # Create a canvas for the plot
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+
+        # Center the Go Back button at the bottom
+        back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
+        back_button.pack(pady=20, fill='x')  # Use pack for the back button
+        
     def open_url(self, url):
         import webbrowser
         webbrowser.open(url)
@@ -393,9 +548,6 @@ class MedicalDictionaryApp:
 
     def accion_boton_5(self):
         messagebox.showinfo("Button 5 Clicked", "Action for Find extra information about a topic")
-
-    def accion_boton_6(self):
-        messagebox.showinfo("Button 6 Clicked", "Action for Data graphs")
 
     def create_scrollable_frame(self, parent):
         # Create a canvas
@@ -427,7 +579,9 @@ def init_gui():
 
 # TO DO: 
 # - Centrar bien los botones de sites
-# - Agregar las demás funciones de los botones (basic info, extra info, data graphs)
+# - Agregar las demás funciones de los botones (basic info, extra info)
 # - Agregar la funcionalidad de búsqueda
 # - Cambiar el formato de los botones y datos de language_mapped_topics y primary_institutes para que se vea mejor
 # - Revisar porque despues de un Go Back, el frame de search aparece abajo del frame de los botones
+# - Revisar si se puede establecer un tamaño de inicio de la pantalla
+# - Crear mas graficos para la opcion de Data graphs
