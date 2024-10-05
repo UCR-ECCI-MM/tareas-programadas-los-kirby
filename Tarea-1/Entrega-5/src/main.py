@@ -8,7 +8,7 @@
 
 from pathlib import Path
 from lexer import build_lexer
-from parser import build_parser, diccionary_health_content, list_health_topics
+from parser import build_parser
 from gui import init_gui
 import sys
 
