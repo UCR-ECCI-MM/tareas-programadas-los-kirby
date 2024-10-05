@@ -33,8 +33,9 @@ Para compilar el lexer, parser y el GUI es necesario importar los siguientes paq
 
         pip install numpy
 
-
         pip install matplotlib
+
+        pip install matplotlib pandas
 
 
 - Si tiene problemas instalando Pillow en máquina virtual hacer lo siguiente:
