@@ -15,7 +15,7 @@ import sys
 
 # Define a rule to read data from file
 def read_data():
-    file_name = Path(__file__).parent / "test.xml"
+    file_name = Path(__file__).parent / "medical_data.xml"
     with open(file_name, 'r') as file:
         data = file.read()
     return data
