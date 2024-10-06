@@ -444,10 +444,10 @@ class MedicalDictionaryApp:
 
                 # Pagination buttons
                 if self.current_page_organizations > 0:
-                    prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1))
+                    prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1), style="Rounded.TButton")
                     prev_button.pack(pady=5, anchor='w')
                 if end_index < total_institutes:
-                    next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1))
+                    next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1), style="Rounded.TButton")
                     next_button.pack(pady=5, anchor='w')
 
             # Go back button at the bottom
