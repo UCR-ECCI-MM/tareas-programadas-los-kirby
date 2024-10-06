@@ -14,7 +14,7 @@ class MedicalDictionaryApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Medical Dictionary")
-        self.root.geometry('600x400')
+        self.root.geometry('1200x600')
 
         # Background color
         self.bg_color = "#F7F6F6"
@@ -544,7 +544,11 @@ class MedicalDictionaryApp:
         print(f"Searching for: {query}")
 
     def accion_boton_3(self):
-        messagebox.showinfo("Button 3 Clicked", "Action for Basic Information about Dataset")
+        from parser import health_TOPICS_DATA_GENERATION_XLL
+        info_string = ("Total Health Topics: " + health_TOPICS_DATA_GENERATION_XLL[0] + '\n'
+        + "Date Generated: " + health_TOPICS_DATA_GENERATION_XLL[1] + '\n' + "Time Generated: "
+        + health_TOPICS_DATA_GENERATION_XLL[2])
+        messagebox.showinfo("Dataset Information",  message=info_string)
 
     def accion_boton_5(self):
         messagebox.showinfo("Button 5 Clicked", "Action for Find extra information about a topic")

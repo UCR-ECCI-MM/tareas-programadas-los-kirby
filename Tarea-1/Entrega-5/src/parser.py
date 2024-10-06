@@ -15,7 +15,7 @@ from lexer import tokens, build_lexer
 # Data structures
 
 # List to store total topics, date and time of generation of XML
-list_health_topics = []       
+health_TOPICS_DATA_GENERATION_XLL = []       
 
 # Dictionary to store description, title, url, id, language and date of a health topic
 # It stores all the elements of a health topic (also_called, full_summary, group, language_mapped_topic
@@ -34,9 +34,10 @@ def p_health_topics(p):
         date = str(p[4])
         time = str(p[5])
         # Add to list
-        list_health_topics = [total_topics, date, time]
+        global health_TOPICS_DATA_GENERATION_XLL
+        health_TOPICS_DATA_GENERATION_XLL = [total_topics, date, time]
         # Save data set info to file
-        save_data_set_info(list_health_topics)
+        save_data_set_info(health_TOPICS_DATA_GENERATION_XLL)
         
 def p_health_topic_contents(p):
     '''health_topic_contents : OPEN_HEALTH_TOPIC HT_DESCRIPTION TITLE URL ID LANGUAGE DATE elements CLOSE_HEALTH_TOPIC health_topic_contents
@@ -328,9 +329,9 @@ def build_parser():
 # Auxiliar functions
 
 # Save data set info to file
-def save_data_set_info(list_health_topics):
+def save_data_set_info(health_TOPICS_DATA_GENERATION_XLL):
     with open("health_topics.txt", "a") as file:
-        total_topics, date, time = list_health_topics
+        total_topics, date, time = health_TOPICS_DATA_GENERATION_XLL
         file.write(f"Total Topics: {total_topics}\n")
         file.write(f"Date: {date}\n")
         file.write(f"Time: {time}\n")
