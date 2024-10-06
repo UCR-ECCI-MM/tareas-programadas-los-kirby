@@ -213,20 +213,20 @@ class MedicalDictionaryApp:
 
                 # Display the URL as a clickable link, centered
                 url = site.get('url', '#')
-                url_label = tk.Label(scrollable_frame, text="Article's URL", bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                url_label = tk.Label(scrollable_frame, text="Article's URL", fg="blue", cursor="hand2")
                 url_label.grid(pady=5, sticky="ew")
                 url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
 
                 # Display organization content if available
                 organization_content = site.get('organization_content', [])
                 if organization_content:
-                    org_label = tk.Label(scrollable_frame, text="Article written by: " + ", ".join(organization_content), bg=self.main_frame.cget("bg"))
+                    org_label = tk.Label(scrollable_frame, text="Article written by: " + ", ".join(organization_content))
                     org_label.grid(pady=5, sticky="ew")
 
                 # Handle language_site_url
                 language_site_url = site.get('language_site_url', None)
                 if language_site_url:
-                    lang_url_label = tk.Label(scrollable_frame, text="Other language URL", bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                    lang_url_label = tk.Label(scrollable_frame, text="Other language URL", fg="blue", cursor="hand2")
                     lang_url_label.grid(pady=5, sticky="ew")
                     lang_url_label.bind("<Button-1>", lambda e, link=language_site_url: self.open_url(link))
 
@@ -278,7 +278,7 @@ class MedicalDictionaryApp:
                 label.pack(pady=5, anchor='center')  # Center each label
 
                 # Display the URL as a clickable label below each institute name
-                url_label = tk.Label(button_frame, text=url, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
+                url_label = tk.Label(button_frame, text=url, fg="blue", cursor="hand2")
                 url_label.pack(anchor='center')  # Center the URL
                 url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
 
@@ -337,7 +337,7 @@ class MedicalDictionaryApp:
 
                 # Display the URLs as clickable labels below the topic name
                 for lang_text, lang_url in language_links:
-                    url_label = tk.Label(content_frame, text=lang_text, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
+                    url_label = tk.Label(content_frame, text=lang_text, fg="blue", cursor="hand2")
                     url_label.pack(anchor='center')  # Center the language URL
                     url_label.bind("<Button-1>", lambda e, link=lang_url: self.open_url(link))
 
@@ -730,6 +730,5 @@ def init_gui():
 
 # TO DO: 
 # - Agregar las demás funciones de los botones (extra info)
-# - Cambiar el formato de los botones y datos de language_mapped_topics y primary_institutes para que se vea mejor
 # - Revisar porque despues de un Go Back, el frame de search aparece abajo del frame de los botones
 # - Crear mas graficos para la opcion de Data graphs
