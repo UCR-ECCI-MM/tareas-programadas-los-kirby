@@ -193,56 +193,45 @@ class MedicalDictionaryApp:
 
         # Title label for the entire section, centered
         title_label = tk.Label(self.main_frame, text="Related articles from this topic:", font=("Montserrat", 14), bg=self.main_frame.cget("bg"))
-        title_label.pack(pady=20, anchor='center')
+        title_label.pack(pady=20)
 
-        # Create a scrollable frame for sites
+        # Create a scrollable frame for details
         canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
-        # Frame to hold content centrally
-        content_frame = ttk.Frame(scrollable_frame)
-        content_frame.grid_columnconfigure(0, weight=1)  # Center column
+        # Make sure the scrollable frame expands and is centered
+        scrollable_frame.pack(expand=True, fill='both')
 
-        # Ensure content_frame is centered within the scrollable_frame
-        content_frame.pack(expand=True, padx=20, pady=20)
+        # Ensure scrollable_frame can grow
+        scrollable_frame.grid_columnconfigure(0, weight=1)
 
         if sites:
             for site in sites:
                 # Display the title in larger font, centered
                 title = site.get('title', 'No Title')
-                title_label = tk.Label(content_frame, text=title, font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
+                title_label = tk.Label(scrollable_frame, text=title, font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
                 title_label.grid(pady=(10, 5), sticky="ew")  # Expand across center
 
                 # Display the URL as a clickable link, centered
                 url = site.get('url', '#')
-                url_label = tk.Label(content_frame, text=url, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                url_label = tk.Label(scrollable_frame, text="Article's URL", bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
                 url_label.grid(pady=5, sticky="ew")
                 url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
 
-                # Display other content like information, organization, and standard content, centered
-                information_content = site.get('information_content', [])
-                if information_content:
-                    info_label = tk.Label(content_frame, text="Info: " + ", ".join(information_content), bg=self.main_frame.cget("bg"))
-                    info_label.grid(pady=5, sticky="ew")
-
+                # Display organization content if available
                 organization_content = site.get('organization_content', [])
                 if organization_content:
-                    org_label = tk.Label(content_frame, text="Organization: " + ", ".join(organization_content), bg=self.main_frame.cget("bg"))
+                    org_label = tk.Label(scrollable_frame, text="Article written by: " + ", ".join(organization_content), bg=self.main_frame.cget("bg"))
                     org_label.grid(pady=5, sticky="ew")
 
-                standard_content = site.get('standard_content', [])
-                if standard_content:
-                    std_label = tk.Label(content_frame, text="Standard: " + ", ".join(standard_content), bg=self.main_frame.cget("bg"))
-                    std_label.grid(pady=5, sticky="ew")
-
-                # Optional: Handle language_site_url (for multilingual support), centered
+                # Handle language_site_url
                 language_site_url = site.get('language_site_url', None)
                 if language_site_url:
-                    lang_url_label = tk.Label(content_frame, text=language_site_url, bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
+                    lang_url_label = tk.Label(scrollable_frame, text="Other language URL", bg=self.main_frame.cget("bg"), fg="blue", cursor="hand2")
                     lang_url_label.grid(pady=5, sticky="ew")
                     lang_url_label.bind("<Button-1>", lambda e, link=language_site_url: self.open_url(link))
 
         # Center the Go Back button at the bottom
-        back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
+        back_button = ttk.Button(scrollable_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
         back_button.grid(pady=20, sticky="ew")
 
     def show_primary_institutes(self):
@@ -284,11 +273,11 @@ class MedicalDictionaryApp:
             button_frame.pack(anchor='center')  # Center the frame within the scrollable area
 
             for term, url, topic_id in sorted_terms:
-                # Create a button for each primary institute
-                button = ttk.Button(button_frame, text=term, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
-                button.pack(pady=5, anchor='center')  # Center each button
+                # Create a label for each primary institute
+                label = tk.Label(button_frame, text=term, font=("Montserrat", 12), bg=self.main_frame.cget("bg"))
+                label.pack(pady=5, anchor='center')  # Center each label
 
-                # Display the URL as a clickable label below each button
+                # Display the URL as a clickable label below each institute name
                 url_label = tk.Label(button_frame, text=url, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
                 url_label.pack(anchor='center')  # Center the URL
                 url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
@@ -309,52 +298,56 @@ class MedicalDictionaryApp:
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-        languages = []
-        topic_ids = []
-        urls = []  # Store URLs
-        texts = []  # Store language names
+        topics = {}  # Store topics with their URLs
 
         # Loop through the dictionary to extract language_mapped_topic_content
         for topic_id, topic_data in diccionary_health_content.items():
             for entry in topic_data:
                 elements = entry[6]
+                topic_name = None  # Variable to hold the topic name
+
+                # Extract language_mapped_topic and get the topic name
                 if 'language_mapped_topic' in elements:
                     for language_mapped_topic in elements['language_mapped_topic']:
-                        # Extract 'text' (language name) and 'url'
-                        texts.append(language_mapped_topic['text'])
-                        urls.append(language_mapped_topic['url'])
-                        topic_ids.append(topic_id)
+                        topic_name = language_mapped_topic['text']
+                        if topic_name not in topics:
+                            topics[topic_name] = []  # Initialize the list for this topic
 
-        if texts:
-            # Sort the languages alphabetically along with their URLs and topic IDs
-            sorted_terms = sorted(zip(texts, urls, topic_ids), key=lambda x: x[0])
+                # Extract other_language
+                if 'other_language' in elements:
+                    for other_language in elements['other_language']:
+                        if topic_name:
+                            topics[topic_name].append((other_language['text'], other_language['url']))
 
+        if topics:
             # Create a scrollable frame using the new method
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
             # Make scrollable_frame fill the entire area and center content
             scrollable_frame.pack(expand=True, fill='both')
 
-            # Create a frame for centering buttons
-            button_frame = ttk.Frame(scrollable_frame)
-            button_frame.pack(anchor='center')  # Center the frame within the scrollable area
+            # Create a frame for centering content
+            content_frame = ttk.Frame(scrollable_frame)
+            content_frame.pack(anchor='center')  # Center the frame within the scrollable area
 
-            for term, url, topic_id in sorted_terms:
-                # Create a button for each language-mapped topic
-                button = ttk.Button(button_frame, text=term, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
-                button.pack(pady=5, anchor='center')  # Center each button
+            for topic_name, language_links in topics.items():
+                # Display the topic name as a label
+                topic_label = tk.Label(content_frame, text=topic_name, font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
+                topic_label.pack(pady=(10, 5), anchor='center')  # Center the topic name
 
-                # Display the URL as a clickable label below each button
-                url_label = tk.Label(button_frame, text=url, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
-                url_label.pack(anchor='center')  # Center the URL
-                url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
+                # Display the URLs as clickable labels below the topic name
+                for lang_text, lang_url in language_links:
+                    url_label = tk.Label(content_frame, text=lang_text, fg="blue", cursor="hand2", bg=self.main_frame.cget("bg"))
+                    url_label.pack(anchor='center')  # Center the language URL
+                    url_label.bind("<Button-1>", lambda e, link=lang_url: self.open_url(link))
 
             # Go back button at the bottom
-            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
+            back_button = ttk.Button(content_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
             back_button.pack(pady=20, anchor='center')  # Center the back button
         else:
             messagebox.showinfo("Information", "No language-mapped topics available.")
             self.create_main_screen()
+
 
     def return_to_main_screen(self):
         # Clear the current main frame
