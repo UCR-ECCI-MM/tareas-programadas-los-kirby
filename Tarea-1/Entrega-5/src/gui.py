@@ -29,9 +29,13 @@ class MedicalDictionaryApp:
         self.top_frame = tk.Frame(self.root, bg="#232323", height=150)
         self.top_frame.pack(fill=tk.BOTH, expand=True)
 
+        # Create a frame for the search bar and button
+        self.create_search_frame()
+
         # Create a frame for the main screen
         self.main_frame = tk.Frame(self.root, bg=self.bg_color)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
+
         # Create the main screen
         self.create_main_screen()
 
@@ -63,26 +67,7 @@ class MedicalDictionaryApp:
     def create_main_screen(self):
         # Clear the main frame
         for widget in self.main_frame.winfo_children():
-            widget.destroy()
-
-        # Check if the search frame already exists
-        if not hasattr(self, 'search_frame'):
-            # Create a frame for the search bar and button
-            self.search_frame = tk.Frame(self.top_frame, bg="#232323")
-            self.search_frame.pack(pady=20)
-
-            # Title above the search bar
-            title_label = tk.Label(self.search_frame, text="Search for symptoms, diseases and procedures", bg="#232323", fg="white", font=("Montserrat", 14, "bold"))
-            title_label.pack(pady=(0, 10))
-
-            # Search entry field in the search frame
-            self.entry = tk.Entry(self.search_frame, width=40)
-            self.entry.pack(side=tk.LEFT, padx=(0, 10))
-
-            search_button = ttk.Button(self.search_frame, text="Search", command=self.search, style="Rounded.TButton", width=11, padding=(6, 0))
-            search_button.pack(side=tk.LEFT)
-        else:
-            self.search_frame.pack(pady=20)
+            widget.pack_forget()
 
         # Create buttons in the bottom frame
         button_frame = tk.Frame(self.main_frame, bg=self.bg_color)
@@ -95,7 +80,7 @@ class MedicalDictionaryApp:
         # Create rounded buttons with grid positions and corresponding labels
         self.create_rounded_button(button_frame, "List of Diseases and Procedures", self.show_topic_list, 0, 0, "Find info about different medical topics", "images_gui/1.jpg")
         self.create_rounded_button(button_frame, "Health Organizations", self.show_primary_institutes, 0, 1, "Catalog with different medical organizations", "images_gui/2.jpg")
-        self.create_rounded_button(button_frame, "Basic Information about Dataset", self.accion_boton_3, 0, 2, "Amount of health topics, date, and time of generation of the XML file", "images_gui/3.jpg")
+        self.create_rounded_button(button_frame, "Basic Information about Dataset", self.show_data_set_contents, 0, 2, "Amount of health topics, date, and time of generation of the XML file", "images_gui/3.jpg")
 
         # Create additional buttons in a new row
         self.create_rounded_button(button_frame, "Other languages for data", self.show_language_mapped_topics, 1, 0, "Articles in different languages", "images_gui/4.jpg")
@@ -384,6 +369,7 @@ class MedicalDictionaryApp:
         self.main_frame.pack(fill=tk.BOTH, expand=True)
 
         self.create_main_screen()  # Call to recreate buttons or any additional UI
+    
     def graph_data_window(self):
         # Hide the top frame and search bar
         self.top_frame.pack_forget()
@@ -543,12 +529,180 @@ class MedicalDictionaryApp:
         query = self.entry.get()
         print(f"Searching for: {query}")
 
-    def accion_boton_3(self):
+    def show_data_set_contents(self):
         from parser import health_TOPICS_DATA_GENERATION_XLL
         info_string = ("Total Health Topics: " + health_TOPICS_DATA_GENERATION_XLL[0] + '\n'
         + "Date Generated: " + health_TOPICS_DATA_GENERATION_XLL[1] + '\n' + "Time Generated: "
         + health_TOPICS_DATA_GENERATION_XLL[2])
         messagebox.showinfo("Dataset Information",  message=info_string)
+
+    def create_search_frame(self):
+        # Create the search frame if it doesn't exist
+        if not hasattr(self, 'search_frame'):
+            self.search_frame = tk.Frame(self.top_frame, bg="#232323")
+            self.search_frame.pack(pady=20)
+
+            # Title label
+            title_label = tk.Label(self.search_frame, text="Search for symptoms, diseases and procedures", bg="#232323", fg="white", font=("Montserrat", 14, "bold"))
+            title_label.pack(pady=(0, 10))
+
+            # Search entry
+            self.entry = tk.Entry(self.search_frame, width=40)
+            self.entry.pack(side=tk.LEFT, padx=(0, 10))
+
+            # Search button
+            search_button = ttk.Button(self.search_frame, text="Search", command=self.search, style="Rounded.TButton", width=11, padding=(6, 0))
+            search_button.pack(side=tk.LEFT)
+            
+    def create_results_frame(self):
+       # Create the results frame if it doesn't exist
+        if not hasattr(self, 'results_frame'):
+            self.results_frame = tk.Frame(self.main_frame, bg=self.bg_color)
+            self.results_frame.pack(expand=True, fill=tk.BOTH)
+
+        # Ensure the results frame is visible
+        self.results_frame.pack(expand=True, fill=tk.BOTH)
+
+    def clear_results(self):
+        if hasattr(self, 'results_frame'):
+            for widget in self.results_frame.winfo_children():
+                widget.destroy()
+
+    def show_search_results(self, results):
+        # Clear the main frame to show results
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        # Create a scrollable frame for the results
+        canvas, self.results_frame = self.create_scrollable_frame(self.main_frame)
+        
+        # Make scrollable_frame fill the entire area and center content
+        self.results_frame.pack(expand=True, fill='both')
+        
+        self.clear_results()  # Clear previous results
+
+        # If no results are found, display a message
+        if not results:
+            no_results_label = tk.Label(self.results_frame, text="No results found.", font=("Montserrat", 12), fg="black")
+            no_results_label.pack(pady=10)
+            # Go back button
+            back_button = ttk.Button(self.results_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
+            back_button.pack(pady=20)
+            
+        else:
+            for topic in results:
+                if len(topic) != 7:
+                    print(f"Unexpected topic structure: {topic}")
+                    continue
+
+                description, title, url, id, language, date, elements = topic
+
+                # Create a label for the title
+                result_label = tk.Label(self.results_frame, text=f"Title: {title}", font=("Montserrat", 12), fg="black")
+                result_label.pack(pady=5)
+
+                # Clickable URL label
+                url_label = tk.Label(self.results_frame, text=url, font=("Montserrat", 12, "underline"),fg="blue", cursor="hand2")
+                url_label.pack(pady=5)
+
+                # Bind the click event to open the URL
+                url_label.bind("<Button-1>", lambda e, url=url: self.open_url(url))
+
+                # Show sites if available
+                if 'site' in elements:
+                    sites_label = tk.Label(self.results_frame, text="Sites:", font=("Montserrat", 12, "bold"), fg="black")
+                    sites_label.pack(pady=5)
+                    for site in elements['site']:
+                        site_title = site.get('title', 'No title')
+                        site_url = site.get('url', '')
+                        
+                        site_label = tk.Label(self.results_frame, text=site_title, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+                        site_label.pack(pady=5)
+                        
+                        # Bind the click event to open the site URL
+                        site_label.bind("<Button-1>", lambda e, url=site_url: self.open_url(url))
+
+                # Show URL for language mapped topic
+                if 'language_mapped_topic' in elements:
+                    lang_topics = elements['language_mapped_topic']
+                    if isinstance(lang_topics, list):
+                        for lang_topic in lang_topics:
+                            lang_topic_url = lang_topic.get('url', '')
+                            lang_topic_text = lang_topic.get('text', 'Language Mapped Topic')
+
+                            lang_label = tk.Label(self.results_frame, text=f"Language Mapped Topic: {lang_topic_text}", font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+                            lang_label.pack(pady=5)
+
+                            # Bind the click event to open the language topic URL
+                            lang_label.bind("<Button-1>", lambda e, url=lang_topic_url: self.open_url(url))
+                    elif isinstance(lang_topics, dict):
+                        lang_topic_url = lang_topics.get('url', '')
+                        lang_topic_text = lang_topics.get('text', 'Language Mapped Topic')
+
+                        lang_label = tk.Label(self.results_frame, text=f"Language Mapped Topic: {lang_topic_text}", font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+                        lang_label.pack(pady=5)
+
+                        # Bind the click event to open the language topic URL
+                        lang_label.bind("<Button-1>", lambda e, url=lang_topic_url: self.open_url(url))
+
+                # Show different names for the topic
+                if 'related_topic' in elements:
+                    related_label = tk.Label(self.results_frame, text="Related Topics:", font=("Montserrat", 12, "bold"), fg="black")
+                    related_label.pack(pady=5)
+                    for related in elements['related_topic']:
+                        related_text = related.get('text', 'Related Topic')
+                        related_url = related.get('url', '')
+
+                        related_topic_label = tk.Label(self.results_frame, text=related_text, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+                        related_topic_label.pack(pady=5)
+
+                        # Bind the click event to open the related topic URL
+                        related_topic_label.bind("<Button-1>", lambda e, url=related_url: self.open_url(url))
+
+                # Go back button
+                back_button = ttk.Button(self.results_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
+                back_button.pack(pady=20)
+
+    def search(self):
+        # Get the query from the entry field
+        query = self.entry.get().lower()
+
+        results = []
+
+        # Iterate over the dictionary to find the query in the title, description, full summary, also called, or see reference
+        for topic_id, topic_list in diccionary_health_content.items():
+            for topic in topic_list:
+                description, title, url, id, language, date, elements = topic
+
+                title = title.lower() if title else ''
+                description = description.lower() if description else ''
+                full_summary = ' '.join(elements.get('full_summary', [])).lower() if 'full_summary' in elements else ''
+
+                also_called = elements.get('also_called', [])
+                if isinstance(also_called, list):
+                    also_called = ' '.join(also_called).lower() 
+                else:
+                    also_called = also_called.lower() if also_called else ''
+
+                see_reference = elements.get('see_reference', [])
+                if isinstance(see_reference, list):
+                    see_reference = ' '.join(see_reference).lower()
+                else:
+                    see_reference = see_reference.lower() if see_reference else ''
+
+                # If the query is found in any of the fields, add the topic to the results
+                if query in title or query in description or query in full_summary or query in also_called or query in see_reference:
+                    results.append(topic)
+                else:
+                    # Check if the query is in any of the sites
+                    sites = elements.get('site', [])
+                    for site in sites:
+                        site_title = site.get('title', '').lower()
+                        if query in site_title:
+                            results.append(topic)
+                            break
+
+        self.show_search_results(results)  
 
     def accion_boton_5(self):
         messagebox.showinfo("Button 5 Clicked", "Action for Find extra information about a topic")
@@ -582,10 +736,7 @@ def init_gui():
     root.mainloop()
 
 # TO DO: 
-# - Centrar bien los botones de sites
-# - Agregar las demás funciones de los botones (basic info, extra info)
-# - Agregar la funcionalidad de búsqueda
+# - Agregar las demás funciones de los botones (extra info)
 # - Cambiar el formato de los botones y datos de language_mapped_topics y primary_institutes para que se vea mejor
 # - Revisar porque despues de un Go Back, el frame de search aparece abajo del frame de los botones
-# - Revisar si se puede establecer un tamaño de inicio de la pantalla
 # - Crear mas graficos para la opcion de Data graphs
