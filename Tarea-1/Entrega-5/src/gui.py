@@ -34,6 +34,21 @@ class MedicalDictionaryApp:
         # Create the search frame if it doesn't exist
         self.create_search_frame()
 
+        self.current_page_list = 0
+        self.items_per_page_list = 30
+
+        self.current_page_sites = 0
+        self.items_per_page_sites = 30
+
+        self.current_page_organizations = 0
+        self.items_per_page_organizations = 30
+
+        self.current_page_languages = 0
+        self.items_per_page_languages = 30
+
+        self.current_page_search = 0
+        self.items_per_page_search = 30
+
         # Create a frame for the main screen
         self.main_frame = tk.Frame(self.root, bg=self.bg_color)
         self.main_frame.pack(fill=tk.BOTH, expand=True)
@@ -106,14 +121,10 @@ class MedicalDictionaryApp:
         self.create_rounded_button(button_frame, "Data graphs", self.graph_data_window, 1, 2, "Graphs about medical data", "images_gui/6.jpg")
 
     def show_topic_list(self):
-        # Hide the top frame and search bar
         self.clear_top_frame()
-
-        # Clear the main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-        # Title label for the entire section
         title_label = tk.Label(self.top_frame, text="List of all topics", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=20, anchor='w')
 
@@ -131,24 +142,64 @@ class MedicalDictionaryApp:
         if also_called_list:
             # Sort the terms alphabetically
             sorted_terms = sorted(zip(also_called_list, topic_ids), key=lambda x: x[0])
+            total_terms = len(sorted_terms)
 
-            # Create a scrollable frame using the new method
+            # Create a scrollable frame
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
             # Create a frame for left-aligned buttons
             button_frame = ttk.Frame(scrollable_frame)
-            button_frame.pack(fill='x')  # Allow the button frame to fill the width
+            button_frame.pack(fill='x')
 
-            for index, (term, topic_id) in enumerate(sorted_terms, start=1):
-                button_text = f"{index}. {term}"  # Add enumeration
-                button = ttk.Button(button_frame, text=button_text, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
-                button.pack(pady=5, anchor='w')  # Align each button to the left
+            # Calculate the items to show for the current page
+            start_index = self.current_page_list * self.items_per_page_list
+            end_index = min(start_index + self.items_per_page_list, total_terms)
 
-            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
-            back_button.pack(pady=20, anchor='w')  # Align back button to the left
+            for index in range(start_index, end_index):
+                term, topic_id = sorted_terms[index]
+                button_text = f"{index + 1}. {term}"
+                button = ttk.Button(button_frame, text=button_text, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)
+                button.pack(pady=5, anchor='w')
+
+            # Back button
+            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)
+            back_button.pack(pady=20, anchor='w')
+
+            # Pagination buttons
+            if self.current_page_list > 0:
+                prev_button = ttk.Button(button_frame, text="Previous", command=lambda: self.change_page_list(-1))
+                prev_button.pack(pady=5, anchor='w')
+            if end_index < total_terms:
+                next_button = ttk.Button(button_frame, text="Next", command=lambda: self.change_page_list(1))
+                next_button.pack(pady=5, anchor='w')
         else:
             messagebox.showinfo("Information", "No topics available.")
             self.create_main_screen()
+
+    def change_page_list(self, direction):
+        # Update current page and refresh the topic list
+        self.current_page_list += direction
+        self.show_topic_list()
+
+    def change_page_sites(self, direction):
+        # Update current page and refresh the site list
+        self.current_page_sites += direction
+        self.show_sites()
+
+    def change_page_organizations(self, direction):
+        # Update current page and refresh the organization list
+        self.current_page_organizations += direction
+        self.show_primary_institutes()
+
+    def change_page_languages(self, direction):
+        # Update current page and refresh the language list
+        self.current_page_languages += direction
+        self.show_language_mapped_topics()
+    
+    def change_page_search(self, direction):
+        # Update current page and refresh the search results
+        self.current_page_search += direction
+        self.search_topics()
 
     def show_topic_details(self, topic_id):
         # Hide the top frame and search bar
@@ -221,7 +272,7 @@ class MedicalDictionaryApp:
 
         scrollable_frame.grid_columnconfigure(0, weight=1)
 
-        # Extract all sites from the dictionary, limiting to 3 per topic
+        # Extract all sites from the dictionary, limiting to 1 per topic
         sites = []
         for topic_id, topic_data in diccionary_health_content.items():
             count = 0  # Counter to limit the number of sites per topic
@@ -229,17 +280,22 @@ class MedicalDictionaryApp:
                 elements = entry[6]
                 if isinstance(elements, dict) and 'site' in elements:
                     for site in elements['site']:
-                        if count < 1:  # Only add up to 1 sites per topic
+                        if count < 1:  # Only add up to 1 site per topic
                             sites.append(site)
                             count += 1
                         else:
-                            break  # Stop adding more sites for this topic when 3 are added
+                            break  # Stop adding more sites for this topic when 1 is added
 
         if sites:
-            # Sort sites alphabetically by title
-            sites.sort(key=lambda x: x.get('title', '').lower())  # Sort by title
+            total_sites = len(sites)  # Total number of sites
+            # Calculate the items to show for the current page
+            start_index = self.current_page_sites * self.items_per_page_sites
+            end_index = min(start_index + self.items_per_page_sites, total_sites)
 
-            for index, site in enumerate(sites, start=1):
+            # Sort sites alphabetically by title
+            paginated_sites = sorted(sites, key=lambda x: x.get('title', '').lower())[start_index:end_index]
+
+            for index, site in enumerate(paginated_sites, start=start_index + 1):
                 title = site.get('title', 'No Title')
                 title_label = tk.Label(scrollable_frame, text=f"{index}. {title}", font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
                 title_label.pack(pady=20, anchor='w')
@@ -259,6 +315,18 @@ class MedicalDictionaryApp:
                     lang_url_label = tk.Label(scrollable_frame, text="Other language URL", fg="blue", cursor="hand2")
                     lang_url_label.pack(pady=5, anchor='w')
                     lang_url_label.bind("<Button-1>", lambda e, link=language_site_url: self.open_url(link))
+
+            # Pagination buttons
+            if self.current_page_sites > 0:
+                prev_button = ttk.Button(scrollable_frame, text="Previous", command=lambda: self.change_page_sites(-1))
+                prev_button.pack(pady=5, anchor='w')
+            if end_index < total_sites:
+                next_button = ttk.Button(scrollable_frame, text="Next", command=lambda: self.change_page_sites(1))
+                next_button.pack(pady=5, anchor='w')
+
+        else:
+            tk.messagebox.showinfo("Information", "No sites available.")
+            self.create_main_screen()
 
         # Go back button at the bottom
         back_button = ttk.Button(scrollable_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
@@ -317,58 +385,70 @@ class MedicalDictionaryApp:
         back_button.pack(pady=20, anchor='w')
 
     def show_primary_institutes(self):
-        # Hide the top frame and search bar
-        self.clear_top_frame()
+            # Hide the top frame and search bar
+            self.clear_top_frame()
 
-        # Clear the main frame
-        for widget in self.main_frame.winfo_children():
-            widget.destroy()
+            # Clear the main frame
+            for widget in self.main_frame.winfo_children():
+                widget.destroy()
 
-        # Title for the primary institutes
-        title_label = tk.Label(self.top_frame, text="Organizations", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
-        title_label.pack(pady=10, anchor='w')
-        topic_ids = []
-        urls = []  # Store URLs
-        texts = []  # Store institute names
+            # Title for the primary institutes
+            title_label = tk.Label(self.top_frame, text="Organizations", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
+            title_label.pack(pady=10, anchor='w')
 
-        # Loop through the dictionary to extract primary institute content
-        for topic_id, topic_data in diccionary_health_content.items():
-            for entry in topic_data:
-                elements = entry[6]
-                if 'primary_institute' in elements:
-                    for primary_institute in elements['primary_institute']:
-                        # Extract 'text' (institute name) and 'url'
-                        texts.append(primary_institute['text'])
-                        urls.append(primary_institute['url'])
-                        topic_ids.append(topic_id)
+            texts = []  # Store institute names
+            urls = []  # Store URLs
 
-        if texts:
-            # Sort the institutes alphabetically along with their URLs and topic IDs
-            sorted_terms = sorted(zip(texts, urls, topic_ids), key=lambda x: x[0])
+            # Loop through the dictionary to extract primary institute content
+            for topic_id, topic_data in diccionary_health_content.items():
+                for entry in topic_data:
+                    elements = entry[6]
+                    if 'primary_institute' in elements:
+                        for primary_institute in elements['primary_institute']:
+                            # Extract 'text' (institute name) and 'url'
+                            texts.append(primary_institute['text'])
+                            urls.append(primary_institute['url'])
 
-            # Create a scrollable frame using the new method
-            canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+            if texts:
+                total_institutes = len(texts)  # Total number of institutes
+                # Calculate the items to show for the current page
+                start_index = self.current_page_organizations * self.items_per_page_organizations
+                end_index = min(start_index + self.items_per_page_organizations, total_institutes)
 
-            content_frame = ttk.Frame(scrollable_frame)
-            content_frame.pack(anchor='w')
+                # Sort the institutes alphabetically along with their URLs
+                sorted_terms = sorted(zip(texts, urls))[start_index:end_index]
 
-            # Enumerate and display the institutes
-            for index, (term, url, topic_id) in enumerate(sorted_terms, start=1):
-                # Create a label for each primary institute
-                label = tk.Label(content_frame, text=f"{index}. {term}", font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
-                label.pack(pady=5, anchor='w')
+                # Create a scrollable frame using the new method
+                canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
-                # Display the URL as a clickable label below each institute name
-                url_label = tk.Label(content_frame, text="Organization's URL", fg="blue", cursor="hand2")
-                url_label.pack(anchor='w')
-                url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
+                content_frame = ttk.Frame(scrollable_frame)
+                content_frame.pack(anchor='w')
 
-            # Go back button at the bottom
-            back_button = ttk.Button(content_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
-            back_button.pack(pady=20, anchor='w')
-        else:
-            messagebox.showinfo("Information", "No primary institutes available.")
-            self.create_main_screen()
+                # Enumerate and display the institutes
+                for index, (term, url) in enumerate(sorted_terms, start=start_index + 1):
+                    # Create a label for each primary institute
+                    label = tk.Label(content_frame, text=f"{index}. {term}", font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
+                    label.pack(pady=5, anchor='w')
+
+                    # Display the URL as a clickable label below each institute name
+                    url_label = tk.Label(content_frame, text="Organization's URL", fg="blue", cursor="hand2")
+                    url_label.pack(anchor='w')
+                    url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
+
+                # Pagination buttons
+                if self.current_page_organizations > 0:
+                    prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1))
+                    prev_button.pack(pady=5, anchor='w')
+                if end_index < total_institutes:
+                    next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1))
+                    next_button.pack(pady=5, anchor='w')
+
+                # Go back button at the bottom
+                back_button = ttk.Button(content_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
+                back_button.pack(pady=20, anchor='w')
+            else:
+                messagebox.showinfo("Information", "No primary institutes available.")
+                self.create_main_screen()
 
     def show_language_mapped_topics(self):
         # Hide the top frame and search bar
@@ -404,8 +484,13 @@ class MedicalDictionaryApp:
                             topics[topic_name].append((other_language['text'], other_language['url']))
 
         if topics:
+            total_topics = len(topics)  # Total number of topics
+             # Calculate the items to show for the current page
+            start_index = self.current_page_languages * self.items_per_page_languages
+            end_index = min(start_index + self.items_per_page_languages, total_topics)
+
             # Sort topics alphabetically
-            sorted_topics = sorted(topics.items())  # Sort by topic name
+            sorted_topics = sorted(topics.items())[start_index:end_index]  # Sort by topic name
 
             # Create a scrollable frame using the new method
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
@@ -414,7 +499,7 @@ class MedicalDictionaryApp:
             content_frame.pack(anchor='w') 
 
             # Enumerate and display the topics
-            for index, (topic_name, language_links) in enumerate(sorted_topics, start=1):
+            for index, (topic_name, language_links) in enumerate(sorted_topics, start=start_index + 1):
                 # Display the topic name as a label
                 topic_label = tk.Label(content_frame, text=f"{index}. {topic_name}", font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
                 topic_label.pack(pady=(10, 5), anchor='w')
@@ -424,6 +509,14 @@ class MedicalDictionaryApp:
                     url_label = tk.Label(content_frame, text=lang_text, fg="blue", cursor="hand2")
                     url_label.pack(anchor='w')
                     url_label.bind("<Button-1>", lambda e, link=lang_url: self.open_url(link))
+
+            # Pagination buttons
+            if self.current_page_languages > 0:
+                prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_languages(-1))
+                prev_button.pack(pady=5, anchor='w')
+            if end_index < total_topics:
+                next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_languages(1))
+                next_button.pack(pady=5, anchor='w')
 
             # Go back button at the bottom
             back_button = ttk.Button(content_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
@@ -471,10 +564,10 @@ class MedicalDictionaryApp:
         graph_button_1 = ttk.Button(content_frame, text="Top 10 Health Topics with Most Sites", command=self.graph_data_1, style="Rounded.TButton")
         graph_button_1.grid(row=0, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
 
-        graph_button_2 = ttk.Button(content_frame, text="Most Frequent Languages in Health Topics", command=self.graph_data_2, style="Rounded.TButton")
+        graph_button_2 = ttk.Button(content_frame, text="Most 10 Frequent Languages in Health Topics", command=self.graph_data_2, style="Rounded.TButton")
         graph_button_2.grid(row=1, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
 
-        graph_button_3 = ttk.Button(content_frame, text="Most Frequent Organizations in Health Topics", command=self.graph_data_3, style="Rounded.TButton")
+        graph_button_3 = ttk.Button(content_frame, text="Most 10 Frequent Organizations in Health Topics", command=self.graph_data_3, style="Rounded.TButton")
         graph_button_3.grid(row=2, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
 
         # Pack the content_frame to ensure it's visible
@@ -594,18 +687,21 @@ class MedicalDictionaryApp:
         # Count the frequency of each language
         language_counts = Counter(languages)
 
+        # Get the 10 most common languages
+        top_languages = language_counts.most_common(10)
+
         # Create a DataFrame with the data
-        df_lang = pd.DataFrame(language_counts.items(), columns=['Language', 'Count'])
+        df_lang = pd.DataFrame(top_languages, columns=['Language', 'Count'])
 
         # Create a Figure for the plot
-        fig = Figure(figsize=(10,6))
+        fig = Figure(figsize=(10, 6))
         ax = fig.add_subplot(111)
 
         # Create the bar chart for language frequencies
         ax.bar(df_lang['Language'], df_lang['Count'], color='lightgreen')
         ax.set_xlabel('Languages')
         ax.set_ylabel('Frequency')
-        ax.set_title('Most Frequent Languages in Health Topics')
+        ax.set_title('Most 10 Frequent Languages in Health Topics')
 
         # Set ticks and labels
         ax.set_xticks(range(len(df_lang['Language'])))
@@ -649,15 +745,17 @@ class MedicalDictionaryApp:
                                     organizations.append(organization)
         # Count the frequency of each organization
         organization_count = Counter(organizations)
+        # Get the 10 most common organizations
+        top_organizations = organization_count.most_common(10)
         # Create a DataFrame with the data
-        df_org = pd.DataFrame(organization_count.items(), columns=['Organization', 'Count'])
+        df_org = pd.DataFrame(top_organizations, columns=['Organization', 'Count'])
         # Create a Figure for the plot
         fig = Figure(figsize=(10, 6))
         ax = fig.add_subplot(111)
         # Create the pie chart for organization frequencies
         ax.pie(df_org['Count'], labels=df_org['Organization'], autopct='%1.1f%%', startangle=90, colors=plt.cm.Paired.colors)
         ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
-        ax.set_title('Most Frequent Organizations in Health Topics')
+        ax.set_title('Most 10 Frequent Organizations in Health Topics')
         # Display the plot
         canvas = FigureCanvasTkAgg(fig, master=content_frame)  # Create a canvas for the plot
         canvas.draw()
@@ -722,78 +820,62 @@ class MedicalDictionaryApp:
             back_button = ttk.Button(self.results_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
             back_button.pack(pady=20, anchor='w')
 
-        else:
-            for index, topic in enumerate(results):  # Correct unpacking here
-                if len(topic) != 7:
-                    print(f"Unexpected topic structure: {topic}")
-                    continue
+            return
 
-                description, title, url, id, language, date, elements = topic
+        total_results = len(results)  # Total number of results
+        # Calculate the items to show for the current page
+        start_index = self.current_page_search * self.items_per_page_search
+        end_index = min(start_index + self.items_per_page_search, total_results)
 
-                # Create a label for the enumerated title
-                result_label = tk.Label(self.results_frame, text=f"{index + 1}. Title: {title}", font=("Montserrat", 12, "bold"), fg="black")
-                result_label.pack(pady=5, anchor='w')
+        # Display the current page of results
+        for index, topic in enumerate(results[start_index:end_index], start=start_index + 1):
+            if len(topic) != 7:
+                print(f"Unexpected topic structure: {topic}")
+                continue
 
-                # Clickable URL label
-                url_label = tk.Label(self.results_frame, text=url, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
-                url_label.pack(pady=5, anchor='w')
+            description, title, url, id, language, date, elements = topic
 
-                # Bind the click event to open the URL
-                url_label.bind("<Button-1>", lambda e, url=url: self.open_url(url))
+            # Create a label for the enumerated title
+            result_label = tk.Label(self.results_frame, text=f"{index}. Title: {title}", font=("Montserrat", 12, "bold"), fg="black")
+            result_label.pack(pady=5, anchor='w')
 
-                # Show sites if available
-                if 'site' in elements:
-                    sites_label = tk.Label(self.results_frame, text="Sites:", font=("Montserrat", 12, "bold"), fg="black")
-                    sites_label.pack(pady=5, anchor='w')
-                    for index, site in enumerate(elements['site'], start=1):
-                        site_title = site.get('title', 'No title')
-                        site_url = site.get('url', '')
+            # Clickable URL label
+            url_label = tk.Label(self.results_frame, text=url, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+            url_label.pack(pady=5, anchor='w')
 
-                        # Create a frame to hold the index and link
-                        frame = tk.Frame(self.results_frame)
-                        frame.pack(pady=5, anchor='w')
+            # Bind the click event to open the URL
+            url_label.bind("<Button-1>", lambda e, url=url: self.open_url(url))
 
-                        # Create the index label
-                        index_label = tk.Label(frame, text=f"{index}. ", font=("Montserrat", 12), fg="black")
-                        index_label.pack(side='left')  # Pack index on the left
+            # Show sites if available
+            if 'site' in elements:
+                sites_label = tk.Label(self.results_frame, text="Sites:", font=("Montserrat", 12, "bold"), fg="black")
+                sites_label.pack(pady=5, anchor='w')
+                for index, site in enumerate(elements['site'], start=1):
+                    site_title = site.get('title', 'No title')
+                    site_url = site.get('url', '')
 
-                        # Create the clickable URL label
-                        url_label = tk.Label(frame, text=site_title, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
-                        url_label.pack(side='left')  # Pack link right next to the index
+                    # Create a frame to hold the index and link
+                    frame = tk.Frame(self.results_frame)
+                    frame.pack(pady=5, anchor='w')
 
-                        # Bind the click event to open the site URL
-                        url_label.bind("<Button-1>", lambda e, url=site_url: self.open_url(url))
+                    # Create the index label
+                    index_label = tk.Label(frame, text=f"{index}. ", font=("Montserrat", 12), fg="black")
+                    index_label.pack(side='left')  # Pack index on the left
 
-                # Show language mapped topics if available
-                if 'language_mapped_topic' in elements:
-                    lang_topics = elements['language_mapped_topic']
-                    if isinstance(lang_topics, list):
-                        for index, lang_topic in enumerate(lang_topics, start=1):
-                            lang_topic_url = lang_topic.get('url', '')
-                            lang_topic_text = lang_topic.get('text', 'Language Mapped Topic')
+                    # Create the clickable URL label
+                    url_label = tk.Label(frame, text=site_title, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+                    url_label.pack(side='left')  # Pack link right next to the index
 
-                            # Create a frame for index and link
-                            frame = tk.Frame(self.results_frame)
-                            frame.pack(pady=5, anchor='w')
+                    # Bind the click event to open the site URL
+                    url_label.bind("<Button-1>", lambda e, url=site_url: self.open_url(url))
 
-                            # Create index label
-                            index_label = tk.Label(frame, text=f"{index}. ", font=("Montserrat", 12), fg="black")
-                            index_label.pack(side='left')
-
-                            # Create clickable language mapped topic label
-                            lang_label = tk.Label(frame, text=lang_topic_text, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
-                            lang_label.pack(side='left')
-
-                            # Bind the click event
-                            lang_label.bind("<Button-1>", lambda e, url=lang_topic_url: self.open_url(url))
-
-                # Show related topics if available
-                if 'related_topic' in elements:
-                    related_label = tk.Label(self.results_frame, text="Related Topics:", font=("Montserrat", 12, "bold"), fg="black")
-                    related_label.pack(pady=5, anchor='w')
-                    for index, related in enumerate(elements['related_topic'], start=1):
-                        related_text = related.get('text', 'Related Topic')
-                        related_url = related.get('url', '')
+            # Show language mapped topics if available
+            if 'language_mapped_topic' in elements:
+                lang_topics = elements['language_mapped_topic']
+                if isinstance(lang_topics, list):
+                    for index, lang_topic in enumerate(lang_topics, start=1):
+                        lang_topic_url = lang_topic.get('url', '')
+                        lang_topic_text = lang_topic.get('text', 'Language Mapped Topic')
 
                         # Create a frame for index and link
                         frame = tk.Frame(self.results_frame)
@@ -803,17 +885,47 @@ class MedicalDictionaryApp:
                         index_label = tk.Label(frame, text=f"{index}. ", font=("Montserrat", 12), fg="black")
                         index_label.pack(side='left')
 
-                        # Create clickable related topic label
-                        related_topic_label = tk.Label(frame, text=related_text, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
-                        related_topic_label.pack(side='left')
+                        # Create clickable language mapped topic label
+                        lang_label = tk.Label(frame, text=lang_topic_text, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+                        lang_label.pack(side='left')
 
                         # Bind the click event
-                        related_topic_label.bind("<Button-1>", lambda e, url=related_url: self.open_url(url))
+                        lang_label.bind("<Button-1>", lambda e, url=lang_topic_url: self.open_url(url))
 
-            # Go back button
-            back_button = ttk.Button(self.results_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
-            back_button.pack(pady=20, anchor='w')
+            # Show related topics if available
+            if 'related_topic' in elements:
+                related_label = tk.Label(self.results_frame, text="Related Topics:", font=("Montserrat", 12, "bold"), fg="black")
+                related_label.pack(pady=5, anchor='w')
+                for index, related in enumerate(elements['related_topic'], start=1):
+                    related_text = related.get('text', 'Related Topic')
+                    related_url = related.get('url', '')
 
+                    # Create a frame for index and link
+                    frame = tk.Frame(self.results_frame)
+                    frame.pack(pady=5, anchor='w')
+
+                    # Create index label
+                    index_label = tk.Label(frame, text=f"{index}. ", font=("Montserrat", 12), fg="black")
+                    index_label.pack(side='left')
+
+                    # Create clickable related topic label
+                    related_topic_label = tk.Label(frame, text=related_text, font=("Montserrat", 12, "underline"), fg="blue", cursor="hand2")
+                    related_topic_label.pack(side='left')
+
+                    # Bind the click event
+                    related_topic_label.bind("<Button-1>", lambda e, url=related_url: self.open_url(url))
+
+        # Pagination buttons
+        if self.current_page_search > 0:
+            prev_button = ttk.Button(self.results_frame, text="Previous", command=lambda: self.change_page_search(-1))
+            prev_button.pack(pady=5, anchor='w')
+        if end_index < total_results:
+            next_button = ttk.Button(self.results_frame, text="Next", command=lambda: self.change_page_search(1))
+            next_button.pack(pady=5, anchor='w')
+
+        # Go back button
+        back_button = ttk.Button(self.results_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
+        back_button.pack(pady=20, anchor='w')
 
     def search(self):
         # Get the query from the entry field
