@@ -522,7 +522,7 @@ class MedicalDictionaryApp:
         df = df.head(10)
 
         # Create a Figure for the plot
-        fig = Figure(figsize=(22, 20))
+        fig = Figure(figsize=(10, 6))
         ax = fig.add_subplot(111)
 
         # Create the bar chart
@@ -594,7 +594,7 @@ class MedicalDictionaryApp:
         df_lang = pd.DataFrame(language_counts.items(), columns=['Language', 'Count'])
 
         # Create a Figure for the plot
-        fig = Figure(figsize=(12, 10))
+        fig = Figure(figsize=(10,6))
         ax = fig.add_subplot(111)
 
         # Create the bar chart for language frequencies
@@ -610,7 +610,7 @@ class MedicalDictionaryApp:
         # Display the plot
         canvas = FigureCanvasTkAgg(fig, master=content_frame)  # Create a canvas for the plot
         canvas.draw()
-        canvas.get_tk_widget().pack(fill='both', expand=True)
+        canvas.get_tk_widget().pack(fill='both', expand=True, side=tk.TOP)
 
         # Center the Go Back button at the bottom
         back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
@@ -653,6 +653,7 @@ class MedicalDictionaryApp:
                 widget.destroy()
 
     def show_search_results(self, results):
+        self.clear_top_frame()
         # Clear the main frame to show results
         for widget in self.main_frame.winfo_children():
             widget.destroy()
@@ -753,8 +754,14 @@ class MedicalDictionaryApp:
         query = self.entry.get().lower()
 
         results = []
+        # Verifica si la longitud del query es menor a 3 caracteres o si contiene solo espacios en blanco
+        if len(query) < 3 or query.isspace():
+            # Muestra un mensaje de error o alerta al usuario
+            self.show_search_results(results)
+            return
 
-        # Iterate over the dictionary to find the query in the title, description, full summary, also called, or see reference
+
+        # Itera sobre el diccionario para encontrar el query en los diferentes campos
         for topic_id, topic_list in diccionary_health_content.items():
             for topic in topic_list:
                 description, title, url, id, language, date, elements = topic
@@ -775,11 +782,11 @@ class MedicalDictionaryApp:
                 else:
                     see_reference = see_reference.lower() if see_reference else ''
 
-                # If the query is found in any of the fields, add the topic to the results
+                # Si la consulta se encuentra en alguno de los campos, añade el tema a los resultados
                 if query in title or query in description or query in full_summary or query in also_called or query in see_reference:
                     results.append(topic)
                 else:
-                    # Check if the query is in any of the sites
+                    # Verifica si el query está en alguno de los sitios
                     sites = elements.get('site', [])
                     for site in sites:
                         site_title = site.get('title', '').lower()
@@ -787,7 +794,9 @@ class MedicalDictionaryApp:
                             results.append(topic)
                             break
 
-        self.show_search_results(results)  
+        # Muestra los resultados de búsqueda
+        self.show_search_results(results)
+ 
 
     def create_scrollable_frame(self, parent):
         # Create a canvas
@@ -818,6 +827,5 @@ def init_gui():
     root.mainloop()
 
 # TO DO: 
-# - Revisar la doble creacion de la barra de busquedas unicamente al usarla y devolverse a la pantalla principal
 # - Ver si hay opcion de centrar las cosas en la pantalla, si no ponerlo a la izquierda
 # - Crear mas graficos para la opcion de Data graphs
