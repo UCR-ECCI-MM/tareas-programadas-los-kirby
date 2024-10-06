@@ -20,7 +20,7 @@ Para compilar el lexer, parser y el GUI es necesario importar los siguientes paq
         import re
 
 - Para el parser sintáctico:
-    
+
         import ply.yacc as yacc
 
 - Para la GUI: Tkinter (biblioteca estándar de Python)
@@ -35,8 +35,7 @@ Para compilar el lexer, parser y el GUI es necesario importar los siguientes paq
 
         pip install matplotlib
 
-        pip install matplotlib pandas
-
+        pip install pandas
 
 - Si tiene problemas instalando Pillow en máquina virtual hacer lo siguiente:
 
