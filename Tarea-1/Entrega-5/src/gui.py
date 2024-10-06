@@ -9,6 +9,8 @@ import pandas as pd
 from collections import Counter
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+import warnings
+warnings.filterwarnings("ignore") # To ignore not found characters in titles of graphs
 
 class MedicalDictionaryApp:
     def __init__(self, root):
@@ -114,9 +116,6 @@ class MedicalDictionaryApp:
             # Create a scrollable frame using the new method
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
-            # Make scrollable_frame fill the entire area and center content
-            scrollable_frame.pack(expand=True, fill='both')
-
             # Create a frame for centering buttons
             button_frame = ttk.Frame(scrollable_frame)
             button_frame.pack(anchor='center')  # Center the frame within the scrollable area
@@ -165,9 +164,6 @@ class MedicalDictionaryApp:
             # Create a scrollable frame for details
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
-            # Make sure the scrollable frame expands and is centered
-            scrollable_frame.pack(expand=True, fill='both')
-
             # Center the details text
             details_text = tk.Text(scrollable_frame, wrap=tk.WORD, bg=self.main_frame.cget("bg"), borderwidth=0)
             details_text.insert(tk.END, details)
@@ -197,9 +193,6 @@ class MedicalDictionaryApp:
 
         # Create a scrollable frame for details
         canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
-
-        # Make sure the scrollable frame expands and is centered
-        scrollable_frame.pack(expand=True, fill='both')
 
         # Ensure scrollable_frame can grow
         scrollable_frame.grid_columnconfigure(0, weight=1)
@@ -265,9 +258,6 @@ class MedicalDictionaryApp:
             # Create a scrollable frame using the new method
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
-            # Make scrollable_frame fill the entire area and center content
-            scrollable_frame.pack(expand=True, fill='both')
-
             # Create a frame for centering buttons
             button_frame = ttk.Frame(scrollable_frame)
             button_frame.pack(anchor='center')  # Center the frame within the scrollable area
@@ -323,9 +313,6 @@ class MedicalDictionaryApp:
             # Create a scrollable frame using the new method
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
-            # Make scrollable_frame fill the entire area and center content
-            scrollable_frame.pack(expand=True, fill='both')
-
             # Create a frame for centering content
             content_frame = ttk.Frame(scrollable_frame)
             content_frame.pack(anchor='center')  # Center the frame within the scrollable area
@@ -347,7 +334,6 @@ class MedicalDictionaryApp:
         else:
             messagebox.showinfo("Information", "No language-mapped topics available.")
             self.create_main_screen()
-
 
     def return_to_main_screen(self):
         # Clear the current main frame
@@ -436,6 +422,9 @@ class MedicalDictionaryApp:
         # Sort the DataFrame by number of sites
         df = df.sort_values(by='Num_Sites', ascending=False)
 
+        # Select only the top 10 entries
+        df = df.head(10)
+
         # Create a Figure for the plot
         fig = Figure(figsize=(10, 6))
         ax = fig.add_subplot(111)
@@ -444,7 +433,7 @@ class MedicalDictionaryApp:
         ax.bar(df['Title'], df['Num_Sites'], color='skyblue')
         ax.set_xlabel('Health Topics')
         ax.set_ylabel('Number of Sites')
-        ax.set_title('Health Topics with Most Sites')
+        ax.set_title('Top 10 Health Topics with Most Sites')
 
         # Set ticks and labels
         ax.set_xticks(range(len(df['Title'])))
@@ -473,7 +462,7 @@ class MedicalDictionaryApp:
 
         # Frame to hold content centrally
         content_frame = ttk.Frame(scrollable_frame)
-        content_frame.grid_columnconfigure(0, weight=1)  # Center column
+        content_frame.grid_columnconfigure(0, weight=1)  # Center the column
 
         # Ensure content_frame is centered within the scrollable_frame
         content_frame.pack(expand=True, padx=20, pady=20)
@@ -482,8 +471,26 @@ class MedicalDictionaryApp:
         languages = []
         for topic_info in diccionary_health_content.values():
             # Access the first tuple in the list
-            _, _, _, _, language, _, _ = topic_info[0]
+            _, _, _, _, language, _, elements = topic_info[0]
+
+            # Add the primary language
             languages.append(language)
+
+            # Add languages from `language_mapped_topic` if it's a dictionary
+            if 'language_mapped_topic' in elements:
+                mapped_topics = elements['language_mapped_topic']
+                if isinstance(mapped_topics, list):
+                    for topic in mapped_topics:
+                        mapped_language = topic.get('language')  # Access the language key
+                        if mapped_language:
+                            languages.append(mapped_language)
+
+            # Add languages from `other_language` if it's a list
+            if 'other_language' in elements:
+                for lang in elements['other_language']:
+                    vernacular_name = lang.get('vernacular_name')  # Access the vernacular_name key
+                    if vernacular_name:
+                        languages.append(vernacular_name)
 
         # Count the frequency of each language
         language_counts = Counter(languages)
@@ -513,7 +520,26 @@ class MedicalDictionaryApp:
         # Center the Go Back button at the bottom
         back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
         back_button.pack(pady=20, fill='x')  # Use pack for the back button
-        
+    
+    def graph_data_3(self):
+        # Hide the top frame and search bar
+        self.top_frame.pack_forget()
+        self.search_frame.pack_forget()
+
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        # Create a scrollable frame
+        canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+        # Frame to hold content centrally
+        content_frame = ttk.Frame(scrollable_frame)
+        content_frame.grid_columnconfigure(0, weight=1)
+
+        # Ensure content_frame is centered within the scrollable_frame
+        content_frame.pack(expand=True, padx=20, pady=20)
+
     def open_url(self, url):
         import webbrowser
         webbrowser.open(url)
@@ -568,9 +594,6 @@ class MedicalDictionaryApp:
 
         # Create a scrollable frame for the results
         canvas, self.results_frame = self.create_scrollable_frame(self.main_frame)
-        
-        # Make scrollable_frame fill the entire area and center content
-        self.results_frame.pack(expand=True, fill='both')
         
         self.clear_results()  # Clear previous results
 
