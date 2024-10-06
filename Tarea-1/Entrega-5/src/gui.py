@@ -41,7 +41,7 @@ class MedicalDictionaryApp:
         self.items_per_page_sites = 30
 
         self.current_page_organizations = 0
-        self.items_per_page_organizations = 30
+        self.items_per_page_organizations = 10
 
         self.current_page_languages = 0
         self.items_per_page_languages = 30
@@ -324,13 +324,13 @@ class MedicalDictionaryApp:
                 next_button = ttk.Button(scrollable_frame, text="Next", command=lambda: self.change_page_sites(1), style="Rounded.TButton")
                 next_button.pack(pady=5, anchor='w')
 
+            # Go back button at the bottom
+            back_button = ttk.Button(scrollable_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
+            back_button.pack(pady=20, anchor='w')
+
         else:
             tk.messagebox.showinfo("Information", "No sites available.")
             self.create_main_screen()
-
-        # Go back button at the bottom
-        back_button = ttk.Button(scrollable_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20, anchor='w')
 
         # Update the scroll region to fit the content
         scrollable_frame.update_idletasks()
@@ -442,13 +442,13 @@ class MedicalDictionaryApp:
                 url_label.pack(anchor='w')
                 url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
 
-                # Pagination buttons
-                if self.current_page_organizations > 0:
-                    prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1), style="Rounded.TButton")
-                    prev_button.pack(pady=5, anchor='w')
-                if end_index < total_institutes:
-                    next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1), style="Rounded.TButton")
-                    next_button.pack(pady=5, anchor='w')
+            # Pagination buttons
+            if self.current_page_organizations > 0:
+                prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1), style="Rounded.TButton")
+                prev_button.pack(pady=5, anchor='w')
+            if end_index < total_institutes:
+                next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1), style="Rounded.TButton")
+                next_button.pack(pady=5, anchor='w')
 
             # Go back button at the bottom
             back_button = ttk.Button(content_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
