@@ -167,10 +167,10 @@ class MedicalDictionaryApp:
 
             # Pagination buttons
             if self.current_page_list > 0:
-                prev_button = ttk.Button(button_frame, text="Previous", command=lambda: self.change_page_list(-1))
+                prev_button = ttk.Button(button_frame, text="Previous", command=lambda: self.change_page_list(-1), style="Rounded.TButton")
                 prev_button.pack(pady=5, anchor='w')
             if end_index < total_terms:
-                next_button = ttk.Button(button_frame, text="Next", command=lambda: self.change_page_list(1))
+                next_button = ttk.Button(button_frame, text="Next", command=lambda: self.change_page_list(1), style="Rounded.TButton")
                 next_button.pack(pady=5, anchor='w')
         else:
             messagebox.showinfo("Information", "No topics available.")
@@ -318,10 +318,10 @@ class MedicalDictionaryApp:
 
             # Pagination buttons
             if self.current_page_sites > 0:
-                prev_button = ttk.Button(scrollable_frame, text="Previous", command=lambda: self.change_page_sites(-1))
+                prev_button = ttk.Button(scrollable_frame, text="Previous", command=lambda: self.change_page_sites(-1), style="Rounded.TButton")
                 prev_button.pack(pady=5, anchor='w')
             if end_index < total_sites:
-                next_button = ttk.Button(scrollable_frame, text="Next", command=lambda: self.change_page_sites(1))
+                next_button = ttk.Button(scrollable_frame, text="Next", command=lambda: self.change_page_sites(1), style="Rounded.TButton")
                 next_button.pack(pady=5, anchor='w')
 
         else:
@@ -437,10 +437,10 @@ class MedicalDictionaryApp:
 
                 # Pagination buttons
                 if self.current_page_organizations > 0:
-                    prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1))
+                    prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1), style="Rounded.TButton")
                     prev_button.pack(pady=5, anchor='w')
                 if end_index < total_institutes:
-                    next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1))
+                    next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1), style="Rounded.TButton")
                     next_button.pack(pady=5, anchor='w')
 
                 # Go back button at the bottom
@@ -512,10 +512,10 @@ class MedicalDictionaryApp:
 
             # Pagination buttons
             if self.current_page_languages > 0:
-                prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_languages(-1))
+                prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_languages(-1), style="Rounded.TButton")
                 prev_button.pack(pady=5, anchor='w')
             if end_index < total_topics:
-                next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_languages(1))
+                next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_languages(1), style="Rounded.TButton")
                 next_button.pack(pady=5, anchor='w')
 
             # Go back button at the bottom
@@ -797,7 +797,7 @@ class MedicalDictionaryApp:
             for widget in self.results_frame.winfo_children():
                 widget.destroy()
 
-    def show_search_results(self, results):
+    def show_search_results(self, results, query):
         self.clear_top_frame()
         # Clear the main frame to show results
         for widget in self.main_frame.winfo_children():
@@ -808,7 +808,7 @@ class MedicalDictionaryApp:
         self.clear_results()  # Clear previous results
 
         # Title for the search results
-        title_label = tk.Label(self.top_frame, text="Search Results", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
+        title_label = tk.Label(self.top_frame, text=f"Search Results for '{query}'", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=10, anchor='w')
 
         # If no results are found, display a message
@@ -917,10 +917,10 @@ class MedicalDictionaryApp:
 
         # Pagination buttons
         if self.current_page_search > 0:
-            prev_button = ttk.Button(self.results_frame, text="Previous", command=lambda: self.change_page_search(-1))
+            prev_button = ttk.Button(self.results_frame, text="Previous", command=lambda: self.change_page_search(-1), style="Rounded.TButton")
             prev_button.pack(pady=5, anchor='w')
         if end_index < total_results:
-            next_button = ttk.Button(self.results_frame, text="Next", command=lambda: self.change_page_search(1))
+            next_button = ttk.Button(self.results_frame, text="Next", command=lambda: self.change_page_search(1), style="Rounded.TButton")
             next_button.pack(pady=5, anchor='w')
 
         # Go back button
@@ -970,7 +970,7 @@ class MedicalDictionaryApp:
                             results.append(topic)
                             break
 
-        self.show_search_results(results)
+        self.show_search_results(results, query)
  
     def create_scrollable_frame(self, parent):
         # Create a canvas
