@@ -110,10 +110,15 @@ class MedicalDictionaryApp:
             widget.destroy()
 
         # Title label for the entire section, centered
-        title_label = tk.Label(self.main_frame, text="List of all topics", font=("Montserrat", 14, "bold"), bg=self.main_frame.cget("bg"))
-        title_label.pack(pady=20, anchor='center')
+        title_label = tk.Label(
+            self.main_frame, 
+            text="List of all topics", 
+            font=("Montserrat", 14, "bold"), 
+            bg=self.main_frame.cget("bg")
+        )
+        title_label.pack(pady=20)
 
-        # Go back button at the top if list is too long
+        # Go back button at the top
         back_button = ttk.Button(self.main_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
         back_button.pack(pady=20)
 
@@ -137,18 +142,27 @@ class MedicalDictionaryApp:
 
             # Create a frame for centering buttons
             button_frame = ttk.Frame(scrollable_frame)
-            button_frame.pack(anchor='center')  # Center the frame within the scrollable area
+            button_frame.pack(pady=10, anchor='center')  # Center the frame
 
             for index, (term, topic_id) in enumerate(sorted_terms, start=1):
                 button_text = f"{index}. {term}"  # Add enumeration
-                button = ttk.Button(button_frame, text=button_text, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)  # Fixed width
-                button.pack(pady=5, anchor='center')  # Center each button
+                button = ttk.Button(
+                    button_frame, 
+                    text=button_text, 
+                    command=lambda id=topic_id: self.show_topic_details(id), 
+                    style="Rounded.TButton", 
+                    width=40  # Fixed width
+                )
+                button.pack(pady=5, padx=20)  # Center each button
 
+            # Back button
             back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
-            back_button.pack(pady=20, anchor='center')  # Center the back button
+            back_button.pack(pady=20)  # Center the back button
         else:
             messagebox.showinfo("Information", "No names in 'also_called' available.")
             self.create_main_screen()
+
+
 
     def show_topic_details(self, topic_id):
         # Hide the top frame and search bar
@@ -473,6 +487,9 @@ class MedicalDictionaryApp:
         graph_button_2 = ttk.Button(content_frame, text="Graph 2", command=self.graph_data_2, style="Rounded.TButton")
         graph_button_2.grid(row=1, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
 
+        graph_button_3 = ttk.Button(content_frame, text="Graph 3", command=self.graph_data_3, style="Rounded.TButton")
+        graph_button_3.grid(row=2, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
+
         # Pack the content_frame to ensure it's visible
         content_frame.pack(expand=True, fill=tk.BOTH, padx=20, pady=20)  # Center and fill
 
@@ -615,6 +632,66 @@ class MedicalDictionaryApp:
         # Center the Go Back button at the bottom
         back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
         back_button.pack(pady=20, fill='x')  # Use pack for the back button
+
+
+    def graph_data_3(self):
+        # Hide the top frame and search bar
+        self.clear_top_frame()
+
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
+
+        # Create a scrollable frame
+        canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+
+        # Frame to hold content centrally
+        content_frame = ttk.Frame(scrollable_frame)
+        content_frame.pack(expand=True, padx=20, pady=20)
+
+        # Extract organizations
+        organizations = []
+        for topic_info in diccionary_health_content.values():
+            # Access the first tuple in the list
+            _, _, _, _, _, _, elements = topic_info[0]
+
+            # Check if 'site' exists in elements
+            if 'site' in elements:
+                mapped_topics = elements['site']
+                if isinstance(mapped_topics, list):  # Ensure it's a list
+                    for topic in mapped_topics:
+                        # Get organization_content if it's a list
+                        mapped_organization_list = topic.get('organization_content')
+                        if isinstance(mapped_organization_list, list):  # Ensure it's a list
+                            for organization in mapped_organization_list:
+                                if organization:  # Check if the organization is not empty
+                                    organizations.append(organization)
+
+        # Count the frequency of each organization
+        organization_count = Counter(organizations)
+
+        # Create a DataFrame with the data
+        df_org = pd.DataFrame(organization_count.items(), columns=['Organization', 'Count'])
+
+        # Create a Figure for the plot
+        fig = Figure(figsize=(10, 6))
+        ax = fig.add_subplot(111)
+
+        # Create the pie chart for organization frequencies
+        ax.pie(df_org['Count'], labels=df_org['Organization'], autopct='%1.1f%%', startangle=90, colors=plt.cm.Paired.colors)
+        ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+        ax.set_title('Most Frequent Organizations in Health Topics')
+
+        # Display the plot
+        canvas = FigureCanvasTkAgg(fig, master=content_frame)  # Create a canvas for the plot
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True, side=tk.TOP)
+
+        # Center the Go Back button at the bottom
+        back_button = ttk.Button(content_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
+        back_button.pack(pady=20, fill='x')  # Use pack for the back button
+
+
 
     def open_url(self, url):
         import webbrowser
