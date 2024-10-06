@@ -385,70 +385,78 @@ class MedicalDictionaryApp:
         back_button.pack(pady=20, anchor='w')
 
     def show_primary_institutes(self):
-            # Hide the top frame and search bar
-            self.clear_top_frame()
+        # Hide the top frame and search bar
+        self.clear_top_frame()
 
-            # Clear the main frame
-            for widget in self.main_frame.winfo_children():
-                widget.destroy()
+        # Clear the main frame
+        for widget in self.main_frame.winfo_children():
+            widget.destroy()
 
-            # Title for the primary institutes
-            title_label = tk.Label(self.top_frame, text="Organizations", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
-            title_label.pack(pady=10, anchor='w')
+        # Title for the primary institutes
+        title_label = tk.Label(self.top_frame, text="Organizations", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
+        title_label.pack(pady=10, anchor='w')
 
-            texts = []  # Store institute names
-            urls = []  # Store URLs
+        texts = []  # Store institute names
+        urls = []  # Store URLs
+        seen_institutes = set()  # Track unique institutes
 
-            # Loop through the dictionary to extract primary institute content
-            for topic_id, topic_data in diccionary_health_content.items():
-                for entry in topic_data:
-                    elements = entry[6]
-                    if 'primary_institute' in elements:
-                        for primary_institute in elements['primary_institute']:
-                            # Extract 'text' (institute name) and 'url'
-                            texts.append(primary_institute['text'])
-                            urls.append(primary_institute['url'])
+        # Loop through the dictionary to extract primary institute content
+        for topic_id, topic_data in diccionary_health_content.items():
+            for entry in topic_data:
+                elements = entry[6]
+                if 'primary_institute' in elements:
+                    for primary_institute in elements['primary_institute']:
+                        # Extract 'text' (institute name) and 'url'
+                        institute_name = primary_institute['text']
+                        institute_url = primary_institute['url']
 
-            if texts:
-                total_institutes = len(texts)  # Total number of institutes
-                # Calculate the items to show for the current page
-                start_index = self.current_page_organizations * self.items_per_page_organizations
-                end_index = min(start_index + self.items_per_page_organizations, total_institutes)
+                        # Append only if the institute is not already added
+                        if institute_name not in seen_institutes:
+                            texts.append(institute_name)
+                            urls.append(institute_url)
+                            seen_institutes.add(institute_name)  # Mark this institute as seen
 
-                # Sort the institutes alphabetically along with their URLs
-                sorted_terms = sorted(zip(texts, urls))[start_index:end_index]
+        if texts:
+            total_institutes = len(texts)  # Total number of institutes
+            # Calculate the items to show for the current page
+            start_index = self.current_page_organizations * self.items_per_page_organizations
+            end_index = min(start_index + self.items_per_page_organizations, total_institutes)
 
-                # Create a scrollable frame using the new method
-                canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
+            # Sort the institutes alphabetically along with their URLs
+            sorted_terms = sorted(zip(texts, urls))[start_index:end_index]
 
-                content_frame = ttk.Frame(scrollable_frame)
-                content_frame.pack(anchor='w')
+            # Create a scrollable frame using the new method
+            canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
-                # Enumerate and display the institutes
-                for index, (term, url) in enumerate(sorted_terms, start=start_index + 1):
-                    # Create a label for each primary institute
-                    label = tk.Label(content_frame, text=f"{index}. {term}", font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
-                    label.pack(pady=5, anchor='w')
+            content_frame = ttk.Frame(scrollable_frame)
+            content_frame.pack(anchor='w')
 
-                    # Display the URL as a clickable label below each institute name
-                    url_label = tk.Label(content_frame, text="Organization's URL", fg="blue", cursor="hand2")
-                    url_label.pack(anchor='w')
-                    url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
+            # Enumerate and display the institutes
+            for index, (term, url) in enumerate(sorted_terms, start=start_index + 1):
+                # Create a label for each primary institute
+                label = tk.Label(content_frame, text=f"{index}. {term}", font=("Montserrat", 12, "bold"), bg=self.main_frame.cget("bg"))
+                label.pack(pady=5, anchor='w')
 
-                # Pagination buttons
-                if self.current_page_organizations > 0:
-                    prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1))
-                    prev_button.pack(pady=5, anchor='w')
-                if end_index < total_institutes:
-                    next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1))
-                    next_button.pack(pady=5, anchor='w')
+                # Display the URL as a clickable label below each institute name
+                url_label = tk.Label(content_frame, text="Organization's URL", fg="blue", cursor="hand2")
+                url_label.pack(anchor='w')
+                url_label.bind("<Button-1>", lambda e, link=url: self.open_url(link))
 
-                # Go back button at the bottom
-                back_button = ttk.Button(content_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
-                back_button.pack(pady=20, anchor='w')
-            else:
-                messagebox.showinfo("Information", "No primary institutes available.")
-                self.create_main_screen()
+            # Pagination buttons
+            if self.current_page_organizations > 0:
+                prev_button = ttk.Button(content_frame, text="Previous", command=lambda: self.change_page_organizations(-1))
+                prev_button.pack(pady=5, anchor='w')
+            if end_index < total_institutes:
+                next_button = ttk.Button(content_frame, text="Next", command=lambda: self.change_page_organizations(1))
+                next_button.pack(pady=5, anchor='w')
+
+            # Go back button at the bottom
+            back_button = ttk.Button(content_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)  # Fixed width
+            back_button.pack(pady=20, anchor='w')
+        else:
+            messagebox.showinfo("Information", "No primary institutes available.")
+            self.create_main_screen()
+
 
     def show_language_mapped_topics(self):
         # Hide the top frame and search bar
