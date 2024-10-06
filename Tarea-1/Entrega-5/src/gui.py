@@ -50,26 +50,30 @@ class MedicalDictionaryApp:
         # Create a frame to simulate rounded corners
         button_frame = tk.Frame(parent, bg="white", padx=5, pady=5)
 
-        # Create a button inside the frame with a fixed width and increased width
-        button = ttk.Button(button_frame, text=text, command=command, style="Rounded.TButton", width=40)
+        # Create a button inside the frame with a fixed width and reduced height
+        button = ttk.Button(button_frame, text=text, command=command, style="Rounded.TButton", width=30)  # Ajustar el ancho
 
         # Load the image if image_path is provided
         if image_path:
             img = Image.open(image_path)  # Open the image file
-            img = img.resize((30, 30), Image.LANCZOS)  # Adjust the image size
-            photo = ImageTk.PhotoImage(img)  # Image to PhotoImage
-            button.config(image=photo, compound=tk.TOP)  # Set image above text
-            button.image = photo  # Keep a reference to avoid garbage collection
+            img = img.resize((40, 40), Image.LANCZOS)  # Ajustar el tamaño de la imagen
+            photo = ImageTk.PhotoImage(img)  # Convertir a PhotoImage
+            button.config(image=photo, compound=tk.TOP)  # Establecer imagen encima del texto
+            button.image = photo  # Mantener una referencia para evitar la recolección de basura
 
-        button.pack(padx=10, pady=(10, 0))  # Padding to create space above the label
+        button.pack(padx=5, pady=(5, 0), fill=tk.BOTH, expand=True)  # Relleno y expansión ajustados
 
         # Create a label below the button if label_text is provided
         if label_text:
-            label = tk.Label(button_frame, text=label_text, bg="white", fg="black", font=("Source Sans 3", 9))
-            label.pack(pady=(5, 0))  # Padding to create space above the label
+            label = tk.Label(button_frame, text=label_text, bg="white", fg="black", font=("Source Sans 3", 12))  # Ajustar el tamaño de la fuente
+            label.pack(pady=(5, 0))  # Relleno para crear espacio sobre la etiqueta
 
         # Use grid for the button frame and make it sticky to fill the space
         button_frame.grid(row=row, column=column, padx=5, pady=5, sticky='nsew')
+
+        # Configure row and column to expand
+        parent.grid_rowconfigure(row, weight=1)
+        parent.grid_columnconfigure(column, weight=1)
 
     def create_main_screen(self):
         # If top frame is not visible, show it at the top of the screen
@@ -110,12 +114,8 @@ class MedicalDictionaryApp:
             widget.destroy()
 
         # Title label for the entire section, centered
-        title_label = tk.Label(self.main_frame, text="List of all topics", font=("Montserrat", 14, "bold"), bg=self.main_frame.cget("bg"))
+        title_label = tk.Label(self.top_frame, text="List of all topics", font=("Montserrat", 20, "bold"), fg="white",bg=self.top_frame.cget("bg"))
         title_label.pack(pady=20, anchor='center')
-
-        # Go back button at the top if list is too long
-        back_button = ttk.Button(self.main_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20)
 
         also_called_list = []
         topic_ids = []
@@ -158,6 +158,10 @@ class MedicalDictionaryApp:
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
+        # Title label for the entire section, centered
+        title_label = tk.Label(self.top_frame, text="Summary", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
+        title_label.pack(pady=20, anchor='center')
+
         if topic_id in diccionary_health_content:
             topic_data = diccionary_health_content[topic_id]
             details = ""
@@ -183,7 +187,7 @@ class MedicalDictionaryApp:
 
             # Create a scrollable frame for details
             canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
-
+            scrollable_frame.pack(expand=True, fill=tk.BOTH)
             # Center the details text
             details_text = tk.Text(scrollable_frame, wrap=tk.WORD, bg=self.main_frame.cget("bg"), borderwidth=0)
             details_text.insert(tk.END, details)
@@ -206,24 +210,29 @@ class MedicalDictionaryApp:
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-        title_label = tk.Label(self.main_frame, text="All available sites", font=("Montserrat", 14, "bold"), bg=self.main_frame.cget("bg"))
+        title_label = tk.Label(self.top_frame, text="All available sites", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=20)
 
-        # Go back button at the top if list is too long
-        back_button = ttk.Button(self.main_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20)
+        info_label = tk.Label(self.top_frame, text="Only shows 1 site per topic", font=("Montserrat", 12, "bold"), fg="white", bg=self.top_frame.cget("bg"))
+        info_label.pack(pady=20)
 
         canvas, scrollable_frame = self.create_scrollable_frame(self.main_frame)
 
         scrollable_frame.grid_columnconfigure(0, weight=1)
 
-        # Extract all sites from the dictionary
+        # Extract all sites from the dictionary, limiting to 3 per topic
         sites = []
         for topic_id, topic_data in diccionary_health_content.items():
+            count = 0  # Counter to limit the number of sites per topic
             for entry in topic_data:
                 elements = entry[6]
                 if isinstance(elements, dict) and 'site' in elements:
-                    sites.extend(elements['site'])  # Add all sites to the list
+                    for site in elements['site']:
+                        if count < 1:  # Only add up to 1 sites per topic
+                            sites.append(site)
+                            count += 1
+                        else:
+                            break  # Stop adding more sites for this topic when 3 are added
 
         if sites:
             # Sort sites alphabetically by title
@@ -254,6 +263,10 @@ class MedicalDictionaryApp:
         back_button = ttk.Button(scrollable_frame, text="Go Back", command=self.return_to_main_screen, style="Rounded.TButton")
         back_button.grid(pady=20, sticky="ew")
 
+        # Update the scroll region to fit the content
+        scrollable_frame.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox("all"))
+
     def show_topic_sites(self, sites):
         # Hide the top frame and search bar
         self.clear_top_frame()
@@ -262,12 +275,8 @@ class MedicalDictionaryApp:
         for widget in self.main_frame.winfo_children():
             widget.destroy()
 
-        # Go back button at the top if list is too long
-        back_button = ttk.Button(self.main_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20)
-
         # Title label for the entire section, centered
-        title_label = tk.Label(self.main_frame, text="Related articles from this topic:", font=("Montserrat", 14), bg=self.main_frame.cget("bg"))
+        title_label = tk.Label(self.top_frame, text="Related articles from this topic:", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=20)
 
         # Create a scrollable frame for details
@@ -315,12 +324,8 @@ class MedicalDictionaryApp:
             widget.destroy()
 
         # Title for the primary institutes
-        title_label = tk.Label(self.main_frame, text="Organizations", font=("Montserrat", 14, "bold"), bg=self.main_frame.cget("bg"))
+        title_label = tk.Label(self.top_frame, text="Organizations", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=10, anchor='center')  # Center the title
-
-        # Go back button at the top if the list is too long
-        back_button = ttk.Button(self.main_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20)
 
         topic_ids = []
         urls = []  # Store URLs
@@ -375,12 +380,8 @@ class MedicalDictionaryApp:
             widget.destroy()
 
         # Title for the language mapped topics
-        title_label = tk.Label(self.main_frame, text="Available languages", font=("Montserrat", 14, "bold"), bg=self.main_frame.cget("bg"))
+        title_label = tk.Label(self.top_frame, text="Available languages", font=("Montserrat", 20, "bold"), fg= "white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=10, anchor='center')  # Center the title
-
-        # Go back button at the top if the list is too long
-        back_button = ttk.Button(self.main_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton")
-        back_button.pack(pady=20)
 
         topics = {}  # Store topics with their URLs
 
@@ -434,6 +435,8 @@ class MedicalDictionaryApp:
             self.create_main_screen()
 
     def return_to_main_screen(self):
+        # Clear the top frame
+        self.clear_top_frame()
         # Clear the current main frame
         for widget in self.main_frame.winfo_children():
             widget.destroy()
@@ -456,7 +459,7 @@ class MedicalDictionaryApp:
             widget.destroy()
 
         # Title label for the entire section, centered
-        title_label = tk.Label(self.main_frame, text="Graphs", font=("Montserrat", 14, "bold"), bg=self.main_frame.cget("bg"))
+        title_label = tk.Label(self.top_frame, text="Graphs", font=("Montserrat", 14, "bold"), fg= "white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=20, anchor='center')
 
         # Create a scrollable frame for sites
@@ -467,10 +470,10 @@ class MedicalDictionaryApp:
         content_frame.grid_columnconfigure(0, weight=1)  # Allow column to expand
 
         # Create buttons for graph options
-        graph_button_1 = ttk.Button(content_frame, text="Graph 1", command=self.graph_data_1, style="Rounded.TButton")
+        graph_button_1 = ttk.Button(content_frame, text="Top 10 Health Topics with Most Sites", command=self.graph_data_1, style="Rounded.TButton")
         graph_button_1.grid(row=0, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
 
-        graph_button_2 = ttk.Button(content_frame, text="Graph 2", command=self.graph_data_2, style="Rounded.TButton")
+        graph_button_2 = ttk.Button(content_frame, text="Most Frequent Languages in Health Topics", command=self.graph_data_2, style="Rounded.TButton")
         graph_button_2.grid(row=1, column=0, pady=10, padx=20, sticky="ew")  # Add padx for spacing
 
         # Pack the content_frame to ensure it's visible
@@ -522,7 +525,7 @@ class MedicalDictionaryApp:
         df = df.head(10)
 
         # Create a Figure for the plot
-        fig = Figure(figsize=(10, 6))
+        fig = Figure(figsize=(12, 8))
         ax = fig.add_subplot(111)
 
         # Create the bar chart
@@ -533,7 +536,7 @@ class MedicalDictionaryApp:
 
         # Set ticks and labels
         ax.set_xticks(range(len(df['Title'])))
-        ax.set_xticklabels(df['Title'], rotation=45, ha='right')
+        ax.set_xticklabels(df['Title'], rotation=45, fontsize=7, ha='right')
 
         # Display the plot
         canvas = FigureCanvasTkAgg(fig, master=content_frame)  # Create a canvas for the plot
@@ -622,7 +625,7 @@ class MedicalDictionaryApp:
 
     def search(self):
         query = self.entry.get()
-        print(f"Searching for: {query}")
+        # print(f"Searching for: {query}")
 
     def show_data_set_contents(self):
         from parser import health_TOPICS_DATA_GENERATION_XLL
@@ -632,18 +635,15 @@ class MedicalDictionaryApp:
         messagebox.showinfo("Dataset Information",  message=info_string)
 
     def create_search_frame(self):
-        # Crear el search_frame si no existe
+        # If search frame already exists, return
         self.search_frame = tk.Frame(self.top_frame, bg="#232323")
         
-        # Título
         title_label = tk.Label(self.search_frame, text="Search for symptoms, diseases and procedures", bg="#232323", fg="white", font=("Montserrat", 14, "bold"))
         title_label.pack(pady=(0, 10))
 
-        # Campo de búsqueda
         self.entry = tk.Entry(self.search_frame, width=40)
         self.entry.pack(side=tk.LEFT, padx=(0, 10))
 
-        # Botón de búsqueda
         search_button = ttk.Button(self.search_frame, text="Search", command=self.search, style="Rounded.TButton", width=11, padding=(6, 0))
         search_button.pack(side=tk.LEFT)
 
@@ -663,7 +663,7 @@ class MedicalDictionaryApp:
         self.clear_results()  # Clear previous results
 
         # Title for the search results
-        title_label = tk.Label(self.results_frame, text="Search Results", font=("Montserrat", 14, "bold"), fg="black")
+        title_label = tk.Label(self.top_frame, text="Search Results", font=("Montserrat", 20, "bold"), fg="white", bg=self.top_frame.cget("bg"))
         title_label.pack(pady=10)
 
         # If no results are found, display a message
@@ -754,14 +754,14 @@ class MedicalDictionaryApp:
         query = self.entry.get().lower()
 
         results = []
-        # Verifica si la longitud del query es menor a 3 caracteres o si contiene solo espacios en blanco
+        # If the query is too short or empty, show an error message
         if len(query) < 3 or query.isspace():
-            # Muestra un mensaje de error o alerta al usuario
+            # Show an error message
             self.show_search_results(results)
             return
 
 
-        # Itera sobre el diccionario para encontrar el query en los diferentes campos
+        # Search for the query in the dictionary
         for topic_id, topic_list in diccionary_health_content.items():
             for topic in topic_list:
                 description, title, url, id, language, date, elements = topic
@@ -782,11 +782,10 @@ class MedicalDictionaryApp:
                 else:
                     see_reference = see_reference.lower() if see_reference else ''
 
-                # Si la consulta se encuentra en alguno de los campos, añade el tema a los resultados
+                # If the query is found in the title, description, full_summary, also_called, or see_reference, add the topic to the results
                 if query in title or query in description or query in full_summary or query in also_called or query in see_reference:
                     results.append(topic)
                 else:
-                    # Verifica si el query está en alguno de los sitios
                     sites = elements.get('site', [])
                     for site in sites:
                         site_title = site.get('title', '').lower()
@@ -794,10 +793,8 @@ class MedicalDictionaryApp:
                             results.append(topic)
                             break
 
-        # Muestra los resultados de búsqueda
         self.show_search_results(results)
  
-
     def create_scrollable_frame(self, parent):
         # Create a canvas
         canvas = tk.Canvas(parent)
