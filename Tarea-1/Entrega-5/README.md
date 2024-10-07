@@ -53,3 +53,9 @@ estando dentro de la carpeta [Tarea-1/Entrega-5/src:](Tarea-1/Entrega-5/src)
     python3 main.py
 
 En el archivo `health_topics.txt` se muestran todos los datos que se guardaron en las estructuras de datos creadas.
+
+## NOTA PARA ASISTENTE
+
+Puede ser que el programa dure un rato en ejecutar, por todas las estructuras de datos, el parser y lexer. 
+
+Aparte de eso todo funciona perfectamente :D pero mejor decidimos poner una nota por si acaso.
