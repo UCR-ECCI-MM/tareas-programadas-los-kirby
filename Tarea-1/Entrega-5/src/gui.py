@@ -35,19 +35,19 @@ class MedicalDictionaryApp:
         self.create_search_frame()
 
         self.current_page_list = 0
-        self.items_per_page_list = 30
+        self.items_per_page_list = 20
 
         self.current_page_sites = 0
-        self.items_per_page_sites = 30
+        self.items_per_page_sites = 20
 
         self.current_page_organizations = 0
         self.items_per_page_organizations = 10
 
         self.current_page_languages = 0
-        self.items_per_page_languages = 30
+        self.items_per_page_languages = 20
 
         self.current_page_search = 0
-        self.items_per_page_search = 30
+        self.items_per_page_search = 10
 
         # Create a frame for the main screen
         self.main_frame = tk.Frame(self.root, bg=self.bg_color)
@@ -120,6 +120,48 @@ class MedicalDictionaryApp:
         self.create_rounded_button(button_frame, "Find extra information about a topic", self.show_sites, 1, 1, "Relevant information about various health articles", "images_gui/5.jpg")
         self.create_rounded_button(button_frame, "Data graphs", self.graph_data_window, 1, 2, "Graphs about medical data", "images_gui/6.jpg")
 
+        self.credits_label()  # Show the credits at the bottom
+
+    def credits_label(self):
+        credits_frame = tk.Frame(self.main_frame, bg=self.main_frame.cget("bg"))
+        credits_frame.pack(pady=10, anchor="w")
+
+        credits_label1 = tk.Label(credits_frame, text="Created by: ", font=("Montserrat", 12), fg="black", bg=self.main_frame.cget("bg"))
+        credits_label1.grid(row=0, column=0, columnspan=2, pady=10, sticky="w")
+
+        img1 = Image.open("images_gui/dog.jpg")
+        img1 = img1.resize((100, 100), Image.LANCZOS)
+        photo1 = ImageTk.PhotoImage(img1)
+
+        img_label1 = tk.Label(credits_frame, image=photo1, bg=self.main_frame.cget("bg"))
+        img_label1.image = photo1 
+        img_label1.grid(row=1, column=0, padx=10, sticky="w")
+
+        credits_label2 = tk.Label(credits_frame, text="Daniel Gómez Solís", font=("Montserrat", 12), fg="black", bg=self.main_frame.cget("bg"))
+        credits_label2.grid(row=1, column=1, padx=10, sticky="w") 
+
+        img2 = Image.open("images_gui/cat.jpg")
+        img2 = img2.resize((100, 100), Image.LANCZOS)
+        photo2 = ImageTk.PhotoImage(img2)
+
+        img_label2 = tk.Label(credits_frame, image=photo2, bg=self.main_frame.cget("bg"))
+        img_label2.image = photo2 
+        img_label2.grid(row=2, column=0, padx=10, sticky="w") 
+
+        credits_label3 = tk.Label(credits_frame, text="María Fernanda Herrera Gutiérrez", font=("Montserrat", 12), fg="black", bg=self.main_frame.cget("bg"))
+        credits_label3.grid(row=2, column=1, padx=10, sticky="w") 
+
+        img3 = Image.open("images_gui/kirby.jpg")
+        img3 = img3.resize((100, 100), Image.LANCZOS)
+        photo3 = ImageTk.PhotoImage(img3)
+
+        img_label3 = tk.Label(credits_frame, image=photo3, bg=self.main_frame.cget("bg"))
+        img_label3.image = photo3
+        img_label3.grid(row=3, column=0, padx=10, sticky="w")
+
+        credits_label4 = tk.Label(credits_frame, text="Grupo: Los Kirbys", font=("Montserrat", 12), fg="black", bg=self.main_frame.cget("bg"))
+        credits_label4.grid(row=3, column=1, padx=10, sticky="w")
+
     def show_topic_list(self):
         self.clear_top_frame()
         for widget in self.main_frame.winfo_children():
@@ -161,10 +203,6 @@ class MedicalDictionaryApp:
                 button = ttk.Button(button_frame, text=button_text, command=lambda id=topic_id: self.show_topic_details(id), style="Rounded.TButton", width=40)
                 button.pack(pady=5, anchor='w')
 
-            # Back button
-            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)
-            back_button.pack(pady=20, anchor='w')
-
             # Pagination buttons
             if self.current_page_list > 0:
                 prev_button = ttk.Button(button_frame, text="Previous", command=lambda: self.change_page_list(-1), style="Rounded.TButton")
@@ -172,6 +210,11 @@ class MedicalDictionaryApp:
             if end_index < total_terms:
                 next_button = ttk.Button(button_frame, text="Next", command=lambda: self.change_page_list(1), style="Rounded.TButton")
                 next_button.pack(pady=5, anchor='w')
+
+            # Back button
+            back_button = ttk.Button(button_frame, text="Go back", command=self.return_to_main_screen, style="Rounded.TButton", width=40)
+            back_button.pack(pady=20, anchor='w')
+    
         else:
             messagebox.showinfo("Information", "No topics available.")
             self.create_main_screen()
@@ -682,16 +725,18 @@ class MedicalDictionaryApp:
                 if isinstance(mapped_topics, list):
                     for topic in mapped_topics:
                         mapped_language = topic.get('language')  # Access the language key
-                        if mapped_language:
+                        if mapped_language and mapped_language != "Spanish":  # Check if it's not Spanish
                             languages.append(mapped_language)
 
-            # Add languages from `other_language` if it's a list
+            # Add languages from `other_language` if it's a dictionary
             if 'other_language' in elements:
-                for lang in elements['other_language']:
-                    vernacular_name = lang.get('vernacular_name')  # Access the vernacular_name key
-                    if vernacular_name:
-                        languages.append(vernacular_name)
-
+                other_languages = elements['other_language']
+                if isinstance(other_languages, list):
+                    for lang in other_languages:
+                        vernacular_name = lang.get('vernacular_name')
+                        if vernacular_name and vernacular_name != "Spanish":  # Check if it's not Spanish
+                            languages.append(vernacular_name)
+                            
         # Count the frequency of each language
         language_counts = Counter(languages)
 
