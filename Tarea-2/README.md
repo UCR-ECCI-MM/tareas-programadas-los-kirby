@@ -5,7 +5,7 @@
 - Documento con explicación del problema a resolver y la indicación de la heurística
 y metaheurística a desarrollar.
 
-[Ruta al documento](Tarea-2/Entrega-1/Entrega1.pdf)
+[Ruta al documento](Entrega-1/Entrega1.pdf)
 
 ### Entrega 2
 
