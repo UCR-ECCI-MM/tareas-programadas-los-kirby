@@ -23,6 +23,30 @@ cantidad de registros, fecha y hora de los datos.
 de los datos de entrada.
 7. Debe tener la mayor robustez posible en la validación de los datos de entrada.
 
+## Tarea programada 2: Descripción
+
+Cada grupo debe proponer un problema que no se puede resolver en tiempo
+polinomial, o sea de tipo NP-Duro o NP-Completo, para ser resuelto mediante
+tres técnicas:
+
+1. Fuerza bruta
+2. Una heurística específica para el tipo de problema a resolver
+3. Una metaheurística de las vistas en el curso
+
+Esta tarea consiste en solucionar el problema mediante las tres técnicas y en
+analizar y comparar los resultados obtenidos en términos de eficacia
+(cumplimiento del objetivo del programa) y eficiencia (tiempo, espacio, etc).
+
+Cada grupo deberá realizar una exposición formal de su trabajo la cual debe
+incluir:
+
+1. Presentación del problema a resolver y su importancia
+2. Explicación de las tres técnicas aplicadas a la solución, incluyendo
+   conceptos teóricos y particularidades de la implementación
+3. Ejecución del programa
+4. Presentación de los resultados de las técnicas desarrolladas y su comparación
+5. Conclusiones
+
 ## Créditos
 
 - Daniel Gómez Solís C23310
