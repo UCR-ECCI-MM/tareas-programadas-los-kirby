@@ -7,9 +7,11 @@ from sklearn.metrics import mean_absolute_error
 import time
 import os
 import matplotlib.pyplot as plt
+import warnings
+warnings.filterwarnings("ignore")
 
-# Use Test code as a base (Tarea-2/Entrega-2/Test/testing.py)
-
+# Warnings de no convergencia aparecen en la consola, pero no afectan el resultado final ya que al final encuentra la solución más óptima
+ 
 # Define the path where your CSV files are located
 data_folder = '../Data/'
 csv_files = [file for file in os.listdir(data_folder) if file.endswith('.csv')]
@@ -100,8 +102,8 @@ for csv_file in csv_files:
     # Sort results by date in descending order
     results = results.sort_index(ascending=False)
 
-    print("\nActual vs Predicted Data (Ordered by Date):")
-    print(results)
+    # Save the results to a CSV file
+    results.to_csv(f'results_{csv_file}')
 
     # Plotting the Actual vs Predicted values
     plt.figure(figsize=(12, 6))
