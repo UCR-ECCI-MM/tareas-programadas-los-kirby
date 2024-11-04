@@ -6,6 +6,7 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_absolute_error
 import time
 import os
+import matplotlib.pyplot as plt
 
 # Use Test code as a base (Tarea-2/Entrega-2/Test/testing.py)
 
@@ -96,8 +97,21 @@ for csv_file in csv_files:
         'Predicted': final_predictions
     }, index=y_test.index)
 
-    print("\nActual vs Predicted Data:")
+    # Sort results by date in descending order
+    results = results.sort_index(ascending=False)
+
+    print("\nActual vs Predicted Data (Ordered by Date):")
     print(results)
+
+    # Plotting the Actual vs Predicted values
+    plt.figure(figsize=(12, 6))
+    plt.plot(results.index, results['Actual'], label='Actual', color='blue')
+    plt.plot(results.index, results['Predicted'], label='Predicted', color='orange')
+    plt.xlabel('Date')
+    plt.ylabel('Close Price')
+    plt.title(f'Actual vs Predicted Close Prices for {csv_file}')
+    plt.savefig(f'actual_vs_predicted_{csv_file}.png')
+    # plt.show()
 
     # Calculate execution time for each file
     end_time = time.time()
