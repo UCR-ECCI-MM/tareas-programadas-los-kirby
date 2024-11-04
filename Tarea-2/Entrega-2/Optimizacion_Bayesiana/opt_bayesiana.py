@@ -6,6 +6,9 @@ from sklearn.neural_network import MLPRegressor
 from sklearn.metrics import mean_absolute_error
 from bayes_opt import BayesianOptimization
 import time
+import warnings
+warnings.filterwarnings("ignore")
+import matplotlib.pyplot as plt
 
 # Use Test code as a base (Tarea-2/Entrega-2/Test/testing.py)
 
@@ -105,8 +108,21 @@ results = pd.DataFrame({
     'Predicted': final_predictions
 }, index=y_test.index)
 
-print("\nActual vs Predicted Data:")
-print(results)
+# Sort results by date in descending order
+results = results.sort_index(ascending=False)
+
+# Save the results to a CSV file
+results.to_csv(f'results_opt_bayesiana.csv')
+
+# Plotting the Actual vs Predicted values
+plt.figure(figsize=(12, 6))
+plt.plot(results.index, results['Actual'], label='Actual', color='blue')
+plt.plot(results.index, results['Predicted'], label='Predicted', color='orange')
+plt.xlabel('Date')
+plt.ylabel('Close Price')
+plt.title(f'Actual vs Predicted Close Prices for Apple')
+plt.savefig(f'actual_vs_predicted_apple.png')
+# plt.show()
 
 # Measure the performance of the model
 mae = mean_absolute_error(y_test, final_predictions)
