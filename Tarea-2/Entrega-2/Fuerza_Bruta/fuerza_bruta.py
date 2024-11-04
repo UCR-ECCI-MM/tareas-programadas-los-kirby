@@ -11,10 +11,18 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Warnings de no convergencia aparecen en la consola, pero no afectan el resultado final ya que al final encuentra la solución más óptima
- 
+
+# Use Test code as a base (Tarea-2/Entrega-2/Test/testing.py)
+
 # Define the path where your CSV files are located
 data_folder = '../Data/'
 csv_files = [file for file in os.listdir(data_folder) if file.endswith('.csv')]
+
+# Create directories for results and future predictions csv files
+results_folder = 'results'
+future_predictions_folder = 'future_predictions'
+os.makedirs(results_folder, exist_ok=True)
+os.makedirs(future_predictions_folder, exist_ok=True)
 
 # Define hyperparameters to test
 hidden_layer_options = [(16, 8), (32, 16), (64, 32)]
@@ -102,8 +110,9 @@ for csv_file in csv_files:
     # Sort results by date in descending order
     results = results.sort_index(ascending=False)
 
-    # Save the results to a CSV file
-    results.to_csv(f'results_{csv_file}')
+    # Save the results to a CSV file in the results folder
+    results_file_path = os.path.join(results_folder, f'results_{csv_file}')
+    results.to_csv(results_file_path)
 
     # Plotting the Actual vs Predicted values
     plt.figure(figsize=(12, 6))
@@ -112,8 +121,11 @@ for csv_file in csv_files:
     plt.xlabel('Date')
     plt.ylabel('Close Price')
     plt.title(f'Actual vs Predicted Close Prices for {csv_file}')
-    plt.savefig(f'actual_vs_predicted_{csv_file}.png')
-    # plt.show()
+    
+    # Save the plot in the results folder
+    plot_file_path = os.path.join(results_folder, f'actual_vs_predicted_{csv_file}.png')
+    plt.savefig(plot_file_path)
+    plt.close()  # Close the plot to free memory
 
     # Calculate execution time for each file
     end_time = time.time()
