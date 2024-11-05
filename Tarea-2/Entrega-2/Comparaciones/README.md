@@ -52,8 +52,6 @@ Usando `Optimización Bayesiana`:
 
 Obtenemos casi que las mismas predicciones que usando Fuerza Bruta, indicando que ambos algoritmos tienen las mismas capacidades de rendimiento (eficacia de las técnicas). Las técnicas si cumplen con su objetivo de encontrar la mejor configuración de hiperparámetros pero existe la limitación de la pequeña entrada de datos.
 
-### Predicciones de precios futuros en base a datos históricos actuales
-
 ## Datos Medianos
 
 Se realizaron 5 corridas y se sacó el promedio de estas.
@@ -102,8 +100,6 @@ Usando `Optimización Bayesiana`:
 
 
 Ambas técnicas muestran un buen rendimiento a la hora de calcular las predicciones. Esto indica la capacidad del modelo de beneficiarse de conjuntos de datos más grandes y mejorar la exactitud de las predicciones.
-
-### Predicciones de precios futuros en base a datos históricos actuales
 
 Se realizaron 5 corridas y se sacó el promedio de estas.
 
@@ -154,3 +150,5 @@ Usando `Optimización Bayesiana`:
 De igual forma que en los conjuntos de datos datos pasados, ambas técnicas muestran un buen rendimiento a la hora de calcular las predicciones. Esto indica la capacidad del modelo de beneficiarse de conjuntos de datos más grandes y mejorar la exactitud de las predicciones.
 
 ### Predicciones de precios futuros en base a datos históricos actuales
+
+Únicamente se realizó con datos grandes para tener una buena aproximación de los precios futuros.
