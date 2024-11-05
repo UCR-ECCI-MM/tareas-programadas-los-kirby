@@ -10,10 +10,10 @@ python3 -m venv myenv
 source myenv/bin/activate
 ```
 
-## Bibliotecas NumPy, Scikit-Learn, Pandas y Bayesian-Optimization:
+## Bibliotecas NumPy, Scikit-Learn, Pandas, Bayesian-Optimization y Matplotlib:
 
 ```bash
-python -m pip install ipython numpy scikit-learn pandas bayesian-optimization
+python -m pip install ipython numpy matplotlib scikit-learn pandas bayesian-optimization
 ```
 
 ## Fuerza Bruta
@@ -41,3 +41,7 @@ Dentro de la carpeta Tarea-2/Entrega-2
 cd Algoritmo_Genetico
 python3 alg_genetico.py
 ```
+
+## Datos obtenidos
+
+Los datos históricos fueron obtenidos de la siguiente página: [Nasdaq](https://www.nasdaq.com/market-activity/stocks/)

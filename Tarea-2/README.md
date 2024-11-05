@@ -17,3 +17,5 @@ y metaheurística a desarrollar.
 [Optimización Bayesiana](Entrega-2/Optimizacion_Bayesiana/opt_bayesiana.py)
 
 [Algoritmo Genético](Entrega-2/Algoritmo_Genetico/alg_genetico.py)
+
+Comparaciones entre las técnicas con diferentes tamaños de entrwada y varias corridas: [Comparaciones](Entrega-2/Comparaciones/README.md)
