@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 # Use Test code as a base (Tarea-2/Entrega-2/Test/testing.py)
 
 # Define the path where your CSV files are located
-data_folder = '../Data/'
+data_folder = '../Large_Data/' # Change folder depending on size of data wanted to test
 csv_files = [file for file in os.listdir(data_folder) if file.endswith('.csv')]
 
 # Create directories for results and future predictions csv files
@@ -113,13 +113,14 @@ for csv_file in csv_files:
     # Save the results to a CSV file in the results folder
     results_file_path = os.path.join(results_folder, f'results_{csv_file}')
     results.to_csv(results_file_path)
-
+    
     # Plotting the Actual vs Predicted values
     plt.figure(figsize=(12, 6))
     plt.plot(results.index, results['Actual'], label='Actual', color='blue')
     plt.plot(results.index, results['Predicted'], label='Predicted', color='orange')
     plt.xlabel('Date')
     plt.ylabel('Close Price')
+    plt.legend()
     plt.title(f'Actual vs Predicted Close Prices for {csv_file}')
     
     # Save the plot in the results folder
@@ -131,3 +132,11 @@ for csv_file in csv_files:
     end_time = time.time()
     execution_time = end_time - start_time
     print(f"Execution time for {csv_file}: {execution_time:.4f} seconds")
+
+    import joblib
+
+    # Save the best model to a file
+    model_file_path = os.path.join(results_folder, f'model_{csv_file}.pkl')
+    joblib.dump(best_model, model_file_path)
+
+    print(f"Model saved to {model_file_path}")
