@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore")
 # Use Test code as a base (Tarea-2/Entrega-2/Test/testing.py)
 
 # Define the path where your CSV files are located
-data_folder = '../Large_Data/' # Change folder depending on size of data wanted to test
+data_folder = '../Small_Data/' # Change folder depending on size of data wanted to test
 csv_files = [file for file in os.listdir(data_folder) if file.endswith('.csv')]
 
 # Create directories for results and future predictions csv files
