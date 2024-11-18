@@ -18,7 +18,7 @@ results_folder = 'results'
 os.makedirs(results_folder, exist_ok=True)
 
 # Process each CSV file in the LargeData folder
-data_folder = '../Medium_Data'
+data_folder = '../Small_Data'
 for file_name in os.listdir(data_folder):
     if file_name.endswith('.csv'):
         print(f"Processing file: {file_name}")
@@ -164,5 +164,7 @@ for file_name in os.listdir(data_folder):
         model_file_path = os.path.join(results_folder, f'final_model_{file_name}.pkl')
         joblib.dump(final_model, model_file_path)
         print(f"Final model saved for {file_name} to: {model_file_path}")
-
+        print(f"Best Solution Fitness for {file_name}: {best_solution_fitness}")
+        print(f"Best Solution (Hyperparameters) for {file_name}: {best_solution}")
+        print(f"Best Solution Index for {file_name}: {best_solution_idx}")
 print("All files processed :D")
