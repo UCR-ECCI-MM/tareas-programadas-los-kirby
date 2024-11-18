@@ -31,12 +31,12 @@ for csv_file in os.listdir(data_folder):
         data = data.sort_index().drop_duplicates()
 
         # Check if the data contains dates from 2015 to 2024
-        if data.index.min() > pd.Timestamp('2015-01-01') or data.index.max() < pd.Timestamp('2024-01-01'):
+        if data.index.min() > pd.Timestamp('2015-01-01') or data.index.max() < pd.Timestamp('2024-10-31'):
             print(f"Not enough data for {csv_file}. Skipping...")
             continue
 
         # Filter data for the range 2015-2024
-        data_2020_2024 = data.loc['2015-01-01':'2024-01-01'].copy()
+        data_2020_2024 = data.loc['2015-01-01':'2024-10-31'].copy()
 
         # Prepare the data for prediction
         data_2020_2024['Previous Close'] = data_2020_2024['Close/Last'].replace({'\$': '', '': '0'}, regex=True).astype(float).shift(1)
@@ -47,7 +47,7 @@ for csv_file in os.listdir(data_folder):
         X_future = scaler.fit_transform(data_2020_2024[['Previous Close']])
 
         # Predict future values for 2025 using the model
-        future_dates = pd.date_range(start='2025-01-01', periods=365, freq='B')  # 365 business days in 2025
+        future_dates = pd.date_range(start='2024-11-01', periods=365, freq='B')  # 365 business days in 2025
         future_predictions = model.predict(X_future[-365:])
 
         # Create a DataFrame for future predictions
@@ -61,7 +61,7 @@ for csv_file in os.listdir(data_folder):
         plt.figure(figsize=(12, 6))
         plt.plot(data.index, data['Close/Last'].replace({'\$': '', '': '0'}, regex=True).astype(float), label='Historical Close', color='blue')
         plt.plot(future_predictions_df.index, future_predictions_df['Predicted Close'], label='Predicted Close', color='orange', linestyle='--')
-        plt.title(f'Historical and Predicted Closing Prices for {os.path.splitext(csv_file)[0]}')
+        plt.title(f'Brute Force - Historical and Predicted Closing Prices for {os.path.splitext(csv_file)[0]}')
         plt.xlabel('Date')
         plt.ylabel('Price')
         plt.legend()
