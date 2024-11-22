@@ -2,8 +2,8 @@
 
 ## opt_bayesiana.py
 
-Este código se encarga, a través de la optimización bayesiana, de realizar predicciones sobre los precios de "stock" utilizando
-un modelo de machine learning (MLPRegressor) y evalua su
+Este código se encarga, mediante la optimización bayesiana, de realizar predicciones sobre los precios de "stock" utilizando
+un modelo de machine learning (MLPRegressor) y evalúa su
 rendimiento con diferentes mercados.
 
 ```{py}
@@ -49,7 +49,7 @@ for csv_file in csv_files:
     start_time = time.time()
 ```
 
-Ciclo para procesar todos los archivos definidos anteriormente. Se tomara el tiempo de ejecución de cada archivo.
+Ciclo para procesar todos los archivos definidos anteriormente. Se tomará el tiempo de ejecución de cada archivo.
 
 ```{py}
 data = pd.read_csv(os.path.join(data_folder, csv_file))
@@ -107,10 +107,10 @@ def optimize_mlp(hidden_layer1, hidden_layer2, learning_rate, max_iter):
     return -mae
 ```
 
-Esta función existe con el proposito de definir el modelo y la métrica (MAE) para
+Esta función existe con el propósito de definir el modelo y la métrica (MAE) para
 optimización.
 
-Est función toma como parámetros:
+Esta función toma como parámetros:
 
 * hidden_layer1 = capa escondida 1 de la red neuronal
 * hidden_layer2 = capa escondida 2 de la red neuronal
@@ -139,7 +139,7 @@ optimizer.maximize(init_points=5, n_iter=15)
 
 Se realiza la configuración para la Optimización Bayesiana:
 
-* param_bounds = se definen los rangor de los hiperparámetros a optimizar
+* param_bounds = se definen los rangos de los hiperparámetros a optimizar
 
     1. hidden_layer1 = primera dupla de neuronas
     2. hidden_layer2 = segunda dupla de neuronas
