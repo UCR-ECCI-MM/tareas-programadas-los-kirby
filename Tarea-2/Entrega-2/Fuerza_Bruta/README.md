@@ -2,8 +2,8 @@
 
 ## fuerza_bruta.py
 
-Este código se encarga, a través de fuerza bruta, de realizar predicciones sobre los precios de "stock" utilizando
-un modelo de machine learning (MLPRegressor) y evalua su
+Este código se encarga, mediante fuerza bruta, de realizar predicciones sobre los precios de "stock" utilizando
+un modelo de machine learning (MLPRegressor) y evalúa su
 rendimiento con diferentes mercados.
 
 ```{py}
@@ -55,9 +55,9 @@ Aquí se definen los hiperparámetros:
     * Capa escondida  -> Dónde el modelo aprende patrones
     * Capa de salida  -> Las predicciones del modelo
 
-    Aquí nosotros definimos un triplete de duplas para las dos diferentes capas escondidas que hay en el modelo, cada vez incrementando la cantidad de neuronas. Esto funciona para que existe un buen ajuste del modelo en caso de que existan pocos datos o muchos datos.
+    Aquí nosotros definimos un triplete de duplas para las dos diferentes capas escondidas que hay en el modelo, cada vez incrementando la cantidad de neuronas. Esto  para que se de un buen ajuste del modelo en caso de que existan pocos datos o muchos datos.
 
-2. learning_rate_options: Este triplete controla la velocidad y el peso de cambia que va a tener el modelo en cada iteración. Entre más pequeño, más precisa va a ser, pero va a requerir más iteraciones. Entre más grande, puede diverger e incluso calcular mal la solución óptima, pero será más rápida. `0.01` es un buen medio el cuál balancea una buena velocidad de convergencia y estabilidad.
+2. learning_rate_options: Este triplete controla la velocidad y el peso de cambia que va a tener el modelo en cada iteración. Entre más pequeño más preciso va a ser, pero va a requerir más iteraciones. Entre más grande puede diverger e incluso calcular mal la solución óptima, pero será más rápida. `0.01` es un buen medio el cuál balancea una buena velocidad de convergencia y estabilidad.
 
 3. max_iter_options: Triplete definido con la cantidad de iteraciones máximas a realizar.
 
@@ -67,7 +67,7 @@ for csv_file in csv_files:
     start_time = time.time()
 ```
 
-Ciclo para procesar todos los archivos definidos anteriormente. Se tomara el tiempo de ejecución de cada archivo.
+Ciclo para procesar todos los archivos definidos anteriormente. Se tomará el tiempo de ejecución de cada archivo.
 
 ```{py}
 data = pd.read_csv(os.path.join(data_folder, csv_file))
@@ -95,7 +95,7 @@ X = X[:-1]
 * X = `Previous Close`, va a ser utilizado para entrenar el modelo.
 * Y = `Close/Last`, también utilizado para entrenar el modelo.
 
-Estos valores se utilizando para que el modelo comprenda la relación entre `Previous Close` y `Close/Last`, y así predecir el `Close/Last` del próximo día.
+Estos valores se utilizan para que el modelo comprenda la relación entre `Previous Close` y `Close/Last`, y así predecir el `Close/Last` del próximo día.
 
 Por último se elimina la última fila de `X` y `Y` para alinear la predicción con los datos disponibles.
 
@@ -107,7 +107,7 @@ X_test = scaler.transform(X_test)
 ```
 
 Divide los datos para entrenar el 80% y el 20% para pruebas.
-Se mejora la X utilizando `StandardScaler` para obtener un rango estandar de las caracteristicas de escalabilidad.
+Se mejora la X utilizando `StandardScaler` para obtener un rango estándar de las características de escalabilidad.
 
 ```{py}
 best_mae = float('inf')
@@ -139,7 +139,7 @@ Se va a iterar por todos los `hidden_layer_options`, `learning_rate_options` and
 
 Para cada iteración se crea un modelo, estos son los parámetros nuevos que se utilizan:
 
-* activation: especifica la función de activación que va a ser utilizado por las neuronas. Aquí se utiliza la `relu` (Rectified Linear Unit). Se usa para dejar pasar salidas sólo positivas o 0.
+* activation: especifíca la función de activación que va a ser utilizado por las neuronas. Aquí se utiliza la `relu` (Rectified Linear Unit). Se usa para dejar pasar salidas sólo positivas o 0.
 
 * solver: se utiliza para encontrar los pesos dela red neuronal. Se utiliza `adam` el cuál ajusta basado en información de gradiente pasada.
 
