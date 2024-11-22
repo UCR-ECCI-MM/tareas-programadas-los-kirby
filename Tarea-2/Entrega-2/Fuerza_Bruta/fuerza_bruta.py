@@ -120,7 +120,7 @@ for csv_file in csv_files:
     plt.xlabel('Date')
     plt.ylabel('Close Price')
     plt.legend()
-    plt.title(f'Actual vs Predicted Close Prices for {csv_file}')
+    plt.title(f'Brute Force - Actual vs Predicted Close Prices for {csv_file}')
     
     # Save the plot in the results folder
     plot_file_path = os.path.join(results_folder, f'actual_vs_predicted_{csv_file}.png')
