@@ -2,9 +2,9 @@
 
 ## fuerza_bruta.py
 
-Este código se encarga, mediante fuerza bruta, de realizar predicciones sobre los precios de "stock" utilizando
-un modelo de machine learning (MLPRegressor) y evalúa su
-rendimiento con diferentes mercados.
+Este código se encarga, mediante fuerza bruta, de realizar predicciones sobre
+los precios de "stock" utilizando un modelo de machine learning (MLPRegressor)
+y evalúa su rendimiento con diferentes mercados.
 
 ```{py}
 import pandas as pd

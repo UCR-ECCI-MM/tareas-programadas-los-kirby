@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPRegressor
@@ -17,7 +16,7 @@ warnings.filterwarnings("ignore")
 results_folder = 'results'
 os.makedirs(results_folder, exist_ok=True)
 
-# Process each CSV file in the LargeData folder
+# Process each CSV file in the {data_folder} folder
 data_folder = '../Small_Data'
 for file_name in os.listdir(data_folder):
     if file_name.endswith('.csv'):
@@ -71,6 +70,7 @@ for file_name in os.listdir(data_folder):
             mae = mean_absolute_error(y_test, y_pred)
             # Return the negative MAE (since GA tries to maximize the fitness function)
             return -mae
+
         # Define the GA parameters
         sol_per_pop = 10 # Number of solutions in a population
         num_gen = 10     # Number of generations
