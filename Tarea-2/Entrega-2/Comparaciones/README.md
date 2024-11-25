@@ -4,7 +4,7 @@
 
 Se realizaron 5 corridas y se sacó el promedio de estas.
 
-## Tiempo de ejecución y uso del espacio
+## Tiempo de ejecución
 
 ### Predicciones de precios actuales en base a datos históricos actuales
 
@@ -41,21 +41,35 @@ La optimización bayesiana toma más tiempo que la fuerza bruta, pero es más r�
 El algoritmo genético es la técnica con mayor duración, con tiempos entre 17.9 y 19.3 segundos para las empresas. Esto se debe al enfoque evolutivo que implica múltiples generaciones y evaluaciones de individuos en cada iteración. El proceso de selección, cruce y mutación es computacionalmente intensivo y, como resultado, esta técnica tiende a consumir más tiempo, especialmente en problemas con múltiples parámetros a optimizar.
 
 ![Apple](graphs/apple_peq.png)
-![Cisco](graphs/cisco.png)
+![Cisco](graphs/cisco_peq.png)
+
+Para el mercado de Microsoft y Nvidia, estos gráfos son similares a los mostrados anteriormente.
 
 ## Rendimiento de la técnica
 
 **Análisis**
 
-Para datos pequeños, las predicciones generadas no alcanzan una precisión alta en comparación con los precios reales ya que el modelo no tiene suficientes datos para entrenarse adecuadamente y aprender de los errores y patrones históricos. 
+Para datos pequeños, las predicciones generadas no alcanzan una precisión alta en comparación con los precios reales ya que el modelo no tiene suficientes datos para entrenarse adecuadamente y aprender de los errores y patrones históricos.
 
 Al observar el gráfico de comparación podemos ver que las predicciones generadas por la red neuronal no son tan exactas y presentan ciertas diferencias con los precios históricos. Sin embargo, el margen de error es mejor de lo esperado en comparación a los precios históricos.
 
-El siguiente gráfico es al usar `Fuerza Bruta`:
+Los siguientes gráfico son al usar `Fuerza Bruta`:
 
 ![Apple](../Fuerza_Bruta/results/Apple/actual_vs_predicted_apple_small_data.csv.png)
 
 Para Apple, obtenemos un margen de error de 2.9007% y una precisión de 91,40%
+
+![Cisco](../Fuerza_Bruta/results/Cisco/actual_vs_predicted_cisco_small_data.csv.png)
+
+Para Cisco, obtenemos un margen de error de 0.6521% y una precisión de 93.06%
+
+![Microsoft](../Fuerza_Bruta/results/Microsoft/actual_vs_predicted_microsoft_small_data.csv.png)
+
+Para Microsoft, obtenemos un margen de error de 4.6251% y una precisión de 84,25%
+
+![Nvidia](../Fuerza_Bruta/results/Nvidia/actual_vs_predicted_nvidia_small_data.csv.png)
+
+Para Nvidia, obtenemos un margen de error de 3.8812% y una precisión de 83.43%
 
 Usando `Optimización Bayesiana`:
 
@@ -63,13 +77,38 @@ Usando `Optimización Bayesiana`:
 
 Para Apple, obtenemos un margen de error de 3.13% y una precisión de 91.03%
 
+![Cisco](../Optimizacion_Bayesiana/results/Cisco/actual_vs_predicted_cisco_small_data.csv.png)
+
+Para Cisco, obtenemos un margen de error de 0.60% y una precisión de 93.53%
+
+![Microsoft](../Optimizacion_Bayesiana/results/Microsoft/actual_vs_predicted_microsoft_small_data.csv.png)
+
+Para Microsoft, obtenemos un margen de error de 4.46% y una precisión de 84.34%
+
+![Nvidia](../Optimizacion_Bayesiana/results/Nvidia/actual_vs_predicted_nvidia_small_data.csv.png)
+
+Para Nvidia, obtenemos un margen de error de 3.81% y una precisión de 83.53%
+
+
 Utilizando optimización bayesiana obtenemos casi que las mismas predicciones que usando fuerza bruta, indicando que ambos algoritmos tienen las mismas capacidades de rendimiento (eficacia de las técnicas). Las técnicas si cumplen con su objetivo de encontrar la mejor configuración de hiperparámetros pero existe la limitación de la pequeña entrada de datos.
 
-Sin embargo, al usar el algoritmo genético las predicciones no son lo suficientemente buenas para una inversión. Esto se debe a que los algoritmos genéticos ocupan un espacio de búsqueda muy amplio y se benefician de la mayor cantidad de datos para poder identificar patrones complejos y soluciones óptimas.
+Al usar el `algoritmo genético` las predicciones no son lo suficientemente buenas para una inversión. Esto se debe a que los algoritmos genéticos ocupan un espacio de búsqueda muy amplio y se benefician de la mayor cantidad de datos para poder identificar patrones complejos y soluciones óptimas.
 
 ![Apple](../Algoritmo_Genetico/results/Apple/plot_apple_small_data.csv.png)
 
 Para Apple, tenemos un margen de error de 18.9858% y una precisión de -116.58%, obteniendo un modelo inexacto y que refleja valores muy alejados de la realidad.
+
+![Cisco](../Algoritmo_Genetico/results/Cisco/plot_cisco_small_data.csv.png)
+
+Para Cisco, obtenemos un margen de error de 0.6281% y una precisión de 93.35%
+
+![Microsoft](../Algoritmo_Genetico/results/Microsoft/plot_microsoft_small_data.csv.png)
+
+Para Microsoft, obtenemos un margen de error de 4.605% y una precisión de 85.21%
+
+![Nvidia](../Algoritmo_Genetico/results/Nvidia/plot_nvidia_small_data.csv.png)
+
+Para Nvidia, obtenemos un margen de error de 3.8446% y una precisión de 83.54%
 
 ## Conclusión
 
@@ -126,21 +165,60 @@ Para datos medianos, el modelo de red neuronal resulta ser bastante óptimo en t
 
 El siguiente gráfico es al usar `Fuerza Bruta`:
 
+![Apple](../Fuerza_Bruta/results/Apple/actual_vs_predicted_apple_medium_data.csv.png)
+
+Para Apple, utilizando fuerza bruta obtenemos un margen de error de 2.899% y una precisión de 99.06%.
+
+
+![Cisco](../Fuerza_Bruta/results/Cisco/actual_vs_predicted_cisco_medium_data.csv.png)
+
+Para Cisco, utilizando fuerza bruta obtenemos un margen de error de 0.7990% y una precisión de 95.61%.
+
+
 ![Microsoft](../Fuerza_Bruta/results/Microsoft/actual_vs_predicted_microsoft_medium_data.csv.png)
 
-Para Microsoft, utilizando fuerza bruta obtenemos un margen de error de 4.97% y una precisión de 99,25%.
+Para Microsoft, utilizando fuerza bruta obtenemos un margen de error de 4.97% y una precisión de 99.25%.
+
+
+![Nvidia](../Fuerza_Bruta/results/Nvidia/actual_vs_predicted_nvidia_medium_data.csv.png)
+
+Para Nvidia, utilizando fuerza bruta obtenemos un margen de error de 1.254% y una precisión de 99.56%.
 
 Usando `Optimización Bayesiana`:
 
+![Apple](../Optimizacion_Bayesiana/results/Apple/actual_vs_predicted_apple_medium_data.csv.png)
+
+Para Apple, utilizando optimización bayesiana obtenemos un margen de error de 2.86% y una precisión de 99.08%.
+
+![Cisco](../Optimizacion_Bayesiana/results/Cisco/actual_vs_predicted_cisco_medium_data.csv.png)
+
+Para Cisco, utilizando optimización bayesiana obtenemos un margen de error de 0.78 y una precisión de 95.76%.
+
 ![Microsoft](../Optimizacion_Bayesiana/results/Microsoft/actual_vs_predicted_microsoft_medium_data.csv.png)
 
-Para Microsoft, utilizando otpimización bayesiana obtenemos un margen de error de 4.90% y una precisión de 99,28%.
+Para Microsoft, utilizando optimización bayesiana obtenemos un margen de error de 4.90% y una precisión de 99.28%.
+
+![Nvidia](../Optimizacion_Bayesiana/results/Nvidia/actual_vs_predicted_nvidia_medium_data.csv.png)
+
+Para Nvidia, utilizando optimización bayesiana obtenemos un margen de error de 1.24% y una precisión de 99.55%.
 
 Usando `Algoritmo Genético`:
 
-![Microsoft](../Algoritmo_Genetico/results/Apple/plot_apple_small_data.csv.png)
+![Apple](../Algoritmo_Genetico/results/Apple/plot_apple_medium_data.csv.png)
+
+Para Apple, utilizando el algoritmo genético tenemos un margen de error de 2.886% y una precisión de 99.08%.
+
+![Cisco](../Algoritmo_Genetico/results/Cisco/plot_cisco_medium_data.csv.png)
+
+Para Cisco, utilizando el algoritmo genético tenemos un margen de error de 0.7816% y una precisión de 95.81%.
+
+![Microsoft](../Algoritmo_Genetico/results/Microsoft/plot_microsoft_medium_data.csv.png)
 
 Para Microsoft, utilizando el algoritmo genético tenemos un margen de error de 5.06% y una precisión de 99.23%.
+
+![Nvidia](../Algoritmo_Genetico/results/Nvidia/plot_nvidia_medium_data.csv.png)
+
+Para Microsoft, utilizando el algoritmo genético tenemos un margen de error de 1.216% y una precisión de 99.56%.
 
 Todas las técnicas muestran un buen rendimiento a la hora de calcular las predicciones. Esto indica la capacidad del modelo de beneficiarse de conjuntos de datos más grandes y mejorar la exactitud de las predicciones.
 
@@ -201,11 +279,35 @@ Al observar los gráficos comparativos, podemos ver que las predicciones se ajus
 
 El siguiente gráfico es al usar `Fuerza Bruta`:
 
+![Apple](../Fuerza_Bruta/results/Apple/actual_vs_predicted_apple_large_data.csv.png)
+
+Obtenemos un margen de error de 1.7271% y una precisión de 99,79%
+
+![Cisco](../Fuerza_Bruta/results/Cisco/actual_vs_predicted_cisco_large_data.csv.png)
+
+Obtenemos un margen de error de 0.643% y una precisión de 98,91%
+
+![Microsoft](../Fuerza_Bruta/results/Microsoft/actual_vs_predicted_microsoft_large_data.csv.png)
+
+Obtenemos un margen de error de 3.0383% y una precisión de 99,83%
+
 ![Nvidia](../Fuerza_Bruta/results/Nvidia/actual_vs_predicted_nvidia_large_data.csv.png)
 
 Obtenemos un margen de error de 0.621% y una precisión de 99,65%
 
 Usando `Optimización Bayesiana`:
+
+![Apple](../Optimizacion_Bayesiana/results/Apple/actual_vs_predicted_apple_large_data.csv.png)
+
+Obtenemos un margen de error de 0.64% y una precisión de 99,66%
+
+![Cisco](../Optimizacion_Bayesiana/results/Cisco/actual_vs_predicted_cisco_large_data.csv.png)
+
+Obtenemos un margen de error de 0.64% y una precisión de 98,90%
+
+![Microsoft](../Optimizacion_Bayesiana/results/Microsoft/actual_vs_predicted_microsoft_large_data.csv.png)
+
+Obtenemos un margen de error de 0.68% y una precisión de 99,79%
 
 ![Nvidia](../Optimizacion_Bayesiana/results/Nvidia/actual_vs_predicted_nvidia_large_data.csv.png)
 
@@ -213,9 +315,21 @@ Obtenemos un margen de error de 0.64% y una precisión de 99,66%
 
 Usando `Algoritmo Genético`:
 
-![Microsoft](../Algoritmo_Genetico/results/Apple/plot_apple_small_data.csv.png)
+![Apple](../Algoritmo_Genetico/results/Apple/plot_apple_large_data.csv.png)
 
-Para Microsoft, utilizando el algoritmo genético tenemos un margen de error de 0.644% y una precisión de 99,65%
+Para Apple, utilizando el algoritmo genético tenemos un margen de error de 1.742% y una precisión de 99,79%
+
+![Cisco](../Algoritmo_Genetico/results/Cisco/plot_cisco_large_data.csv.png)
+
+Para Cisco, utilizando el algoritmo genético tenemos un margen de error de 0.643% y una precisión de 98,90%
+
+![Microsoft](../Algoritmo_Genetico/results/Microsoft/plot_microsoft_large_data.csv.png)
+
+Para Microsoft, utilizando el algoritmo genético tenemos un margen de error de 3.057% y una precisión de 99,83%
+
+![Nvidia](../Algoritmo_Genetico/results/Nvidia/plot_nvidia_large_data.csv.png)
+
+Para Nvidia, utilizando el algoritmo genético tenemos un margen de error de 0.644% y una precisión de 99,65%
 
 De igual forma que en los conjuntos de datos pasados, todas las técnicas muestran un buen rendimiento a la hora de calcular las predicciones. Esto indica la capacidad del modelo de beneficiarse de conjuntos de datos más grandes y mejorar la exactitud de las predicciones.
 
@@ -227,7 +341,17 @@ Para un conjunto de **datos grande**, lo más recomendable es utilizar la técni
 
 Únicamente se realizó con datos grandes para tener una buena aproximación de los precios futuros.
 
-Únicamente se realizó con datos grandes para tener una buena aproximación de los precios futuros.
+Para la empresa `Apple`, el siguiente gráfico es generado al usar `Fuerza Bruta`:
+
+![apple](../Fuerza_Bruta/future_plots/plot_apple_large_data_2025.png)
+
+Usando `Optimización Bayesiana`:
+
+![apple](../Optimizacion_Bayesiana/future_plots/plot_apple_large_data_2025.png)
+
+Usando `Algoritmo Genético`:
+
+![apple](../Algoritmo_Genetico/future_plots/plot_apple_large_data_2025.png)
 
 Para la empresa `Cisco`, el siguiente gráfico es generado al usar `Fuerza Bruta`:
 
@@ -240,3 +364,30 @@ Usando `Optimización Bayesiana`:
 Usando `Algoritmo Genético`:
 
 ![Cisco](../Algoritmo_Genetico/future_plots/plot_cisco_large_data_2025.png)
+
+Para la empresa `Microsoft`, el siguiente gráfico es generado al usar `Fuerza Bruta`:
+
+![microsoft](../Fuerza_Bruta/future_plots/plot_microsoft_large_data_2025.png)
+
+Usando `Optimización Bayesiana`:
+
+![microsoft](../Optimizacion_Bayesiana/future_plots/plot_microsoft_large_data_2025.png)
+
+Usando `Algoritmo Genético`:
+
+![microsoft](../Algoritmo_Genetico/future_plots/plot_microsoft_large_data_2025.png)
+
+Para la empresa `Nvidia`, el siguiente gráfico es generado al usar `Fuerza Bruta`:
+
+![nvidia](../Fuerza_Bruta/future_plots/plot_nvidia_large_data_2025.png)
+
+Usando `Optimización Bayesiana`:
+
+![nvidia](../Optimizacion_Bayesiana/future_plots/plot_nvidia_large_data_2025.png)
+
+Usando `Algoritmo Genético`:
+
+![nvidia](../Algoritmo_Genetico/future_plots/plot_nvidia_large_data_2025.png)
+
+Las predicciones realizadas para cada empresa por cada modelo son
+bastante similares aunque si poseen sus diferencias. También las predicciones hechas se basan bastante en el mercado de la empresa del último año.
