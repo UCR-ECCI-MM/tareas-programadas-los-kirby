@@ -89,7 +89,6 @@ Para Microsoft, obtenemos un margen de error de 4.46% y una precisión de 84.34%
 
 Para Nvidia, obtenemos un margen de error de 3.81% y una precisión de 83.53%
 
-
 Utilizando optimización bayesiana obtenemos casi que las mismas predicciones que usando fuerza bruta, indicando que ambos algoritmos tienen las mismas capacidades de rendimiento (eficacia de las técnicas). Las técnicas si cumplen con su objetivo de encontrar la mejor configuración de hiperparámetros pero existe la limitación de la pequeña entrada de datos.
 
 Al usar el `algoritmo genético` las predicciones no son lo suficientemente buenas para una inversión. Esto se debe a que los algoritmos genéticos ocupan un espacio de búsqueda muy amplio y se benefician de la mayor cantidad de datos para poder identificar patrones complejos y soluciones óptimas.
@@ -391,3 +390,53 @@ Usando `Algoritmo Genético`:
 
 Las predicciones realizadas para cada empresa por cada modelo son
 bastante similares aunque si poseen sus diferencias. También las predicciones hechas se basan bastante en el mercado de la empresa del último año.
+
+# Análisis Conclusiones Finales
+
+## Fuerza Bruta
+
+### Tiempo
+
+Al tener que realizar todas las iteraciones con los tres hiperparámetres definidos (x = capas escondidas, y = tasa de aprendizaje, z = iteraciones máximas), tenemos una complejidad de tiempo de O(x * y * z). No se incluye el tiempo necesario para correr el modelo de la red neuronal.
+
+### Precisión
+
+Al tener que revisar cada combinación, es posible encontrar la mejor configuración, pero su espacio de busqueda se limita el definido.
+
+### Rendimiento
+
+Computacionalmente es caro, más cuando la cantidad de datos son enormes y la cantidad de modelos que debe entrenar.
+
+## Optimización Bayesiana
+
+### Tiempo
+
+Es más eficiente que fuerza bruta ya que no debe probar cada combinación de hiperparámetros.
+
+### Precisión
+
+Dado a que la optimización bayesiana se retroalimenta de evaluaciones pasadas para evaluaciones futuras. Involucra una busqueda inteligente entre explotación y exploración de soluciones, esto le permite buscar más a fondo en áreas prometedoras y no limitarse a números enteros.
+
+### Rendimiento
+
+Al limitarse a busquedas específicas, no realiza busquedas innecesarias el cual guarda recursos. En términos de la forma en que el modelo fue utilizada, al sólo tener 3 hiperparámetros, no se deberieron realizar tantas comparaciones, pero de todas formas si necesita realizar muchas operaciones por cada iteración. En términos de espacio, al utilizar un proceso gaussiano, requiere de espacio para las matrices y estas incrementan con mayor iteraciones.
+
+## Algoritmo Genético
+
+### Tiempo
+
+Este algoritmo es bastante caro computacionalmente, todo dependiendo de la cantidad de hiperparámetros y generaciones que se quieran. Cada solución requiere de entrenamiento, evaluación y va a ver generaciones de esas soluciones.
+
+### Precisión
+
+Con muchas iteraciones, tiene el potencial de tener una precisión bastante acertada por el uso de poblaciones de soluciones y sus evoluciones. Posee un buen balance entre exploración y explotación.
+
+## Razón de duración mayor en el algoritmo genético
+
+Nuestra solución al problema de realizar predicciones futuras no trata de realizar en cada iteración una predicción y comparar a datos pasados del mercado. Lo que pretende hacer es las relaciones entre la información dada cada día por el cierto tiempo definido (tamaño del dataset) y así crear un modelo capaz de realizar predicciones de acuerdo a patrones y relaciones encontradas.
+
+Esto significa que en la fuerza bruta, se realizan evaluacions unitarias sin depender ni informarse de pasadas, por lo que el rango definido de los hiperparámetros no resultan ser tan extraordinarios para tener una duración larga y sus pruebas no són tan pesadas (uso de redes neuronales).
+
+En la optimización bayesiana, al ser una solución probabilistica, esta realiza busquedas inteligentes el cuál permite una convergencia rápida con buenas soluciones y uso de menos iteraciones.
+
+El algoritmo genético realiza también buenas busquedas, pero no son tan inteligentes como la optimización bayesiana, ya que encuentra una zona factible y busca en la zona sin guiarse a un óptimo. Esto significa que debe más iteraciones pero no es lo único, las soluciones que encuentra deben pasar por el proceso de selección, cruce y mutación. Es por eso que la duración es mayor, incluyendo teniendo que hacer utilidad de redes neuronales en cada función *fitness*.
