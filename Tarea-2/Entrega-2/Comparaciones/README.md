@@ -397,7 +397,7 @@ bastante similares aunque si poseen sus diferencias. También las predicciones h
 
 ### Tiempo
 
-Al tener que realizar todas las iteraciones con los tres hiperparámetres definidos (x = capas escondidas, y = tasa de aprendizaje, z = iteraciones máximas), tenemos una complejidad de tiempo de O(x * y * z). No se incluye el tiempo necesario para correr el modelo de la red neuronal.
+Al tener que realizar todas las iteraciones con los tres hiperparámetres definidos (x = tamaño capas escondidas, y = tasa de aprendizaje, z = iteraciones máximas), tenemos una complejidad de tiempo de O(x * y * z). No se incluye el tiempo necesario para correr el modelo de la red neuronal.
 
 ### Precisión
 
