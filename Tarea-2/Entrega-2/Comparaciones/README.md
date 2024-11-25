@@ -431,11 +431,17 @@ Este algoritmo es bastante caro computacionalmente, todo dependiendo de la canti
 
 Con muchas iteraciones, tiene el potencial de tener una precisión bastante acertada por el uso de poblaciones de soluciones y sus evoluciones. Posee un buen balance entre exploración y explotación.
 
+### Rendimiento
+
+Es bastante caro dado a que necesita realizar muchas evaluciones, comparaciones
+y operaciones. De espacio, necesita guardar soluciones candidatas y mientras más
+incrementa la población más expacio utiliza.
+
 ## Razón de duración mayor en el algoritmo genético
 
-Nuestra solución al problema de realizar predicciones futuras no trata de realizar en cada iteración una predicción y comparar a datos pasados del mercado. Lo que pretende hacer es las relaciones entre la información dada cada día por el cierto tiempo definido (tamaño del dataset) y así crear un modelo capaz de realizar predicciones de acuerdo a patrones y relaciones encontradas.
+Lo que pretende hacer nuestro model es encontrar es las relaciones entre la información dada cada día por el cierto tiempo definido (tamaño del dataset) y así crear un modelo capaz de realizar predicciones de acuerdo a patrones y relaciones encontradas.
 
-Esto significa que en la fuerza bruta, se realizan evaluacions unitarias sin depender ni informarse de pasadas, por lo que el rango definido de los hiperparámetros no resultan ser tan extraordinarios para tener una duración larga y sus pruebas no són tan pesadas (uso de redes neuronales).
+Esto significa que en la fuerza bruta, se realizan evaluaciones unitarias sin depender ni informarse de pasadas, por lo que el rango definido de los hiperparámetros no resultan ser tan extraordinarios para tener una duración larga y sus pruebas no són tan pesadas (uso de redes neuronales).
 
 En la optimización bayesiana, al ser una solución probabilistica, esta realiza busquedas inteligentes el cuál permite una convergencia rápida con buenas soluciones y uso de menos iteraciones.
 
